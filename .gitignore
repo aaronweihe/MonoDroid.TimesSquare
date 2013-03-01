@@ -12,6 +12,12 @@ TestResults
 *.suo
 *.user
 *.sln.docstates
+*/_ReSharper.*/*
+*.pidb
+*.userprefs
+*.Designer.cs
+*.designer.cs
+*.DS_Store
 
 # Build results
 [Dd]ebug/

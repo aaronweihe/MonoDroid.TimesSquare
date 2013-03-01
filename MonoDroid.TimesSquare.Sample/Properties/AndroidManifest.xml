@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto">
+  <uses-sdk android:targetSdkVersion="16" />
+  <application
+        android:label="MonoDroid.TimesSquare Sample"
+        android:icon="@drawable/icon"
+        >
+  </application>
+</manifest>
