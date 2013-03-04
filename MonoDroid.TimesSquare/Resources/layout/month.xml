@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<MonoDroid.TimesSquare.MonthView xmlns:android="http://schemas.android.com/apk/res/android"
+<monodroid.timessquare.MonthView xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -11,54 +11,55 @@
         android:layout_marginTop="@dimen/calendar_month_topmargin"
         android:layout_marginBottom="@dimen/calendar_month_title_bottommargin"
         style="@style/CalendarTitle" />
-    <MonoDroid.TimesSquare.CalendarGridView
-        android:id="@+id/calendar_grid"
+  <monodroid.timessquare.CalendarGridView
+      android:id="@+id/calendar_grid"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content">
+    <monodroid.timessquare.CalendarRowView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <MonoDroid.TimesSquare.CalendarRowView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingBottom="@dimen/calendar_day_headers_paddingbottom">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/CalendarCell.DayHeader" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/CalendarCell.DayHeader" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/CalendarCell.DayHeader" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/CalendarCell.DayHeader" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/CalendarCell.DayHeader" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/CalendarCell.DayHeader" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/CalendarCell.DayHeader" />
-        </MonoDroid.TimesSquare.CalendarRowView>
-        <include
-            layout="@layout/week" />
-        <include
-            layout="@layout/week" />
-        <include
-            layout="@layout/week" />
-        <include
-            layout="@layout/week" />
-        <include
-            layout="@layout/week" />
-        <include
-            layout="@layout/week" />
-    </MonoDroid.TimesSquare.CalendarGridView>
-</MonoDroid.TimesSquare.MonthView>
+        android:layout_height="wrap_content"
+        android:paddingBottom="@dimen/calendar_day_headers_paddingbottom">
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CalendarCell.DayHeader" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CalendarCell.DayHeader" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CalendarCell.DayHeader" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CalendarCell.DayHeader" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CalendarCell.DayHeader" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CalendarCell.DayHeader" />
+      <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          style="@style/CalendarCell.DayHeader" />
+    </monodroid.timessquare.CalendarRowView>
+    <include
+        layout="@layout/week" />
+    <include
+        layout="@layout/week" />
+    <include
+        layout="@layout/week" />
+    <include
+        layout="@layout/week" />
+    <include
+        layout="@layout/week" />
+    <include
+        layout="@layout/week" />
+    </monodroid.timessquare.CalendarGridView>
+
+</monodroid.timessquare.MonthView>

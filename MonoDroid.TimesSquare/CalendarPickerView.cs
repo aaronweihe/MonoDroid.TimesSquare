@@ -43,6 +43,7 @@ namespace MonoDroid.TimesSquare
         public CalendarPickerView(Context context, IAttributeSet attrs)
             : base(context, attrs)
         {
+            ResourceIdManager.UpdateIdValues();
             MyAdapter = new MonthAdapter(context, this);
 			base.Adapter = MyAdapter;
             base.Divider = null;

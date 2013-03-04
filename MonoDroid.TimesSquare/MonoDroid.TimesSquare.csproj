@@ -53,6 +53,7 @@
     <Compile Include="MonthCellDescriptor.cs" />
     <Compile Include="MonthDescriptor.cs" />
     <Compile Include="MonthView.cs" />
+    <Compile Include="ResourceIdManger.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Logr.cs" />
   </ItemGroup>
