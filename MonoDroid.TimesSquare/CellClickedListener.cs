@@ -29,7 +29,7 @@ namespace MonoDroid.TimesSquare
                 _calendar.SelectedCell = cell;
                 _calendar.SelectedCell.IsSelected = true;
                 //Track the currently selected date value.
-                _calendar.SelectedCell.DateTime = cell.DateTime;
+			    _calendar.SelectedCal.Time = cell.DateTime;
                 //Update the adapter.
                 _calendar.MyAdapter.NotifyDataSetChanged();
             }

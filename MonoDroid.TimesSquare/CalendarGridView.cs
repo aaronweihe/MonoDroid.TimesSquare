@@ -15,7 +15,7 @@ namespace MonoDroid.TimesSquare
         public CalendarGridView(Context context, IAttributeSet attrs)
             : base(context, attrs)
         {
-            _dividerPaint.Color = Resources.GetColor(Resource.Color.calendar_divider);
+            _dividerPaint.Color = base.Resources.GetColor(Resource.Color.calendar_divider);
         }
 
         public override void AddView(View child, int index, LayoutParams @params)
@@ -47,7 +47,7 @@ namespace MonoDroid.TimesSquare
         protected override bool DrawChild(Canvas canvas, View child, long drawingTime)
         {
             bool isInvalidated = base.DrawChild(canvas, child, drawingTime);
-			//Draw a bottom border
+            //Draw a bottom border
             int bottom = child.Bottom - 1;
             canvas.DrawLine(child.Left, bottom, child.Right, bottom, _dividerPaint);
             return isInvalidated;
@@ -58,25 +58,21 @@ namespace MonoDroid.TimesSquare
             long start = DateTime.Now.Millisecond;
             int totalWidth = MeasureSpec.GetSize(widthMeasureSpec);
             int cellSize = totalWidth / 7;
-            totalWidth = cellSize*7;
+            totalWidth = cellSize * 7;
             int totalHeight = 0;
             int rowWidthSpec = MeasureSpec.MakeMeasureSpec(totalWidth, MeasureSpecMode.Exactly);
             int rowHeightSpec = MeasureSpec.MakeMeasureSpec(cellSize, MeasureSpecMode.Exactly);
             for (int c = 0; c < ChildCount; c++) {
                 View child = GetChildAt(c);
                 if (child.Visibility == ViewStates.Visible) {
-                    if (c == 0) {
-                        MeasureChild(child, rowWidthSpec, MeasureSpec.MakeMeasureSpec(cellSize, MeasureSpecMode.AtMost));
-                    }
-                    else {
-                        MeasureChild(child, rowWidthSpec, rowHeightSpec);
-                    }
+                    MeasureChild(child, rowWidthSpec,
+                                 c == 0 ? MeasureSpec.MakeMeasureSpec(cellSize, MeasureSpecMode.AtMost) : rowHeightSpec);
                     totalHeight += child.MeasuredHeight;
                 }
             }
             int measuredWidth = totalWidth + 2; // Fudge factor to make the borders show up right.
             SetMeasuredDimension(measuredWidth, totalHeight);
-			Logr.D ("Grid.OnMeasure {0} ms", DateTime.Now.Millisecond - start);
+            Logr.D("Grid.OnMeasure {0} ms", DateTime.Now.Millisecond - start);
         }
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
@@ -88,7 +84,7 @@ namespace MonoDroid.TimesSquare
                 child.Layout(l, t, r, t + rowHeight);
                 t += rowHeight;
             }
-			Logr.D ("Grid.OnLayout {0} ms", DateTime.Now.Millisecond - start);
+            Logr.D("Grid.OnLayout {0} ms", DateTime.Now.Millisecond - start);
         }
     }
 }

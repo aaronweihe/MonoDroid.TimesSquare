@@ -18,10 +18,10 @@ namespace MonoDroid.TimesSquare
         {
         }
 
-        public override void AddView(View child)
+        public override void AddView(View child, int index, LayoutParams @params)
         {
             child.SetOnClickListener(this);
-            base.AddView(child);
+            base.AddView(child, index, @params);
         }
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
@@ -31,6 +31,7 @@ namespace MonoDroid.TimesSquare
                 SetMeasuredDimension(MeasuredWidth, MeasuredHeight);
                 return;
             }
+
             long start = DateTime.Now.Millisecond;
             int totalWidth = MeasureSpec.GetSize(widthMeasureSpec);
             _cellSize = totalWidth / 7;
@@ -56,7 +57,7 @@ namespace MonoDroid.TimesSquare
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
             long start = DateTime.Now.Millisecond;
-            int cellHeight = Bottom - Top;
+            int cellHeight = b - t;
             for (int c = 0; c < ChildCount; c++) {
                 View child = GetChildAt(c);
                 child.Layout(c * _cellSize, 0, (c + 1) * _cellSize, cellHeight);

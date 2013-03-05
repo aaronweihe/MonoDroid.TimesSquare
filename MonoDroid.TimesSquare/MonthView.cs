@@ -37,7 +37,8 @@ namespace MonoDroid.TimesSquare
             for (int c = Calendar.Sunday; c <= Calendar.Saturday; c++) {
                 today.Set(CalendarField.DayOfWeek, c);
                 var textView = (TextView)headerRow.GetChildAt(c - 1);
-                textView.Text = today.Time.ToString();
+                var date = Convert.ToDateTime(today.Time.ToGMTString());
+                textView.Text = date.ToString(weekdayNameFormat);
             }
             today.Set(CalendarField.DayOfWeek, originalDayOfWeek);
             view._listener = listener;

@@ -28,7 +28,7 @@ namespace MonoDroid.TimesSquare
         public MonthCellDescriptor SelectedCell;
 
         public readonly Java.Util.Calendar Today = Java.Util.Calendar.Instance;
-        private readonly Java.Util.Calendar _selectedCal = Java.Util.Calendar.Instance;
+        public readonly Java.Util.Calendar SelectedCal = Java.Util.Calendar.Instance;
         public readonly Java.Util.Calendar MinCal = Java.Util.Calendar.Instance;
         public readonly Java.Util.Calendar MaxCal = Java.Util.Calendar.Instance;
         private readonly Java.Util.Calendar _monthCounter = Java.Util.Calendar.Instance;
@@ -37,7 +37,7 @@ namespace MonoDroid.TimesSquare
 
         public Java.Util.Calendar SelectedDate
         {
-            get { return _selectedCal; }
+            get { return SelectedCal; }
         }
 
         public CalendarPickerView(Context context, IAttributeSet attrs)
@@ -81,10 +81,10 @@ namespace MonoDroid.TimesSquare
             Cells.Clear();
             Months.Clear();
 
-            _selectedCal.Time = selectedDate;
+            SelectedCal.Time = selectedDate;
             MinCal.Time = minDate;
             MaxCal.Time = maxDate;
-            SetMidnight(_selectedCal);
+            SetMidnight(SelectedCal);
             SetMidnight(MinCal);
             SetMidnight(MaxCal);
 
@@ -95,19 +95,29 @@ namespace MonoDroid.TimesSquare
             _monthCounter.Time = MinCal.Time;
             int maxMonth = MaxCal.Get(CalendarField.Month);
             int maxYear = MaxCal.Get(CalendarField.Year);
+            int selectedYear = SelectedCal.Get(CalendarField.Year);
+            int selectedMonth = SelectedCal.Get(CalendarField.Month);
+            int selectedIndex = 0;
 
             while ((_monthCounter.Get(CalendarField.Month) <= maxMonth
                     || _monthCounter.Get(CalendarField.Year) < maxYear)
                    && _monthCounter.Get(CalendarField.Year) < maxYear + 1) {
-                MonthDescriptor month = new MonthDescriptor(_monthCounter.Get(CalendarField.Month),
+                var time = Convert.ToDateTime(_monthCounter.Time.ToGMTString());
+                var month = new MonthDescriptor(_monthCounter.Get(CalendarField.Month),
                                                             _monthCounter.Get(CalendarField.Year),
-                                                            _monthCounter.Get(CalendarField.Month).ToString(_monthNameFormat));
-                Cells.Add(GetMonthCells(month, _monthCounter, _selectedCal));
+                                                            time.ToString(_monthNameFormat));
+                Cells.Add(GetMonthCells(month, _monthCounter, SelectedCal));
                 Logr.D("Adding month {0}", month);
+                if (selectedMonth == month.Month && selectedYear == month.Year) {
+                    selectedIndex = Months.Count;
+                }
                 Months.Add(month);
                 _monthCounter.Add(CalendarField.Month, 1);
             }
             MyAdapter.NotifyDataSetChanged();
+            if (selectedIndex != 0) {
+                SmoothScrollToPosition(selectedIndex);
+            }
         }
 
         private static void SetMidnight(Java.Util.Calendar cal)
@@ -153,13 +163,20 @@ namespace MonoDroid.TimesSquare
                         SelectedCell = cell;
                     }
                     weekCells.Add(cell);
-                    cal.Add(CalendarField.Month, 1);
+                    cal.Add(CalendarField.Date, 1);
                 }
             }
             return cells;
         }
 
-        public bool IsBetweenDates(Java.Util.Calendar cal, Java.Util.Calendar minCal, Java.Util.Calendar maxCal)
+        public static bool IsBetweenDates(Date date, Java.Util.Calendar minCal, Java.Util.Calendar maxCal)
+        {
+            Date min = minCal.Time;
+            return (date.Equals(min) || date.After(min)) // >= minCal
+                   && date.Before(maxCal.Time); // && < maxCal
+        }
+
+        public static bool IsBetweenDates(Java.Util.Calendar cal, Java.Util.Calendar minCal, Java.Util.Calendar maxCal)
         {
             Date date = cal.Time;
             return IsBetweenDates(date, minCal, maxCal);
@@ -177,12 +194,7 @@ namespace MonoDroid.TimesSquare
             return "selectedDate: " + selectedDate + "\nminDate: " + minDate + "\nmaxDate: " + maxDate;
         }
 
-        public static bool IsBetweenDates(Date date, Java.Util.Calendar minCal, Java.Util.Calendar maxCal)
-        {
-            Date min = minCal.Time;            
-			return (date.Equals(min) || date.After(min)) // >= minCal
-                   && date.Before(maxCal.Time); // && < maxCal
-        }
+
 
     }
 }

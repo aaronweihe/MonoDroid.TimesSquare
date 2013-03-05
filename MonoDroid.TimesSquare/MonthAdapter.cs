@@ -32,6 +32,11 @@ namespace MonoDroid.TimesSquare
             return false;
         }
 
+        public override int Count
+        {
+            get { return _calendar.Months.Count; }
+        }
+
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var monthView = (MonthView) convertView ??
@@ -40,9 +45,6 @@ namespace MonoDroid.TimesSquare
             return monthView;
         }
 
-        public override int Count
-        {
-            get { return _calendar.Months.Count; }
-        }
+
     }
 }
