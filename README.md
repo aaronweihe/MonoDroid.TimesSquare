@@ -3,9 +3,9 @@ MonoDroid.TimesSquare
 
 A port of [android-times-square](https://github.com/square/android-times-square).
 
-In development.
+**In development.**
 
-Got issues when refernceing resource files, especially drawables and colors.
+Check out [Issues](https://github.com/aaronmix/MonoDroid.TimesSquare/issues) page.
 
 
 License
