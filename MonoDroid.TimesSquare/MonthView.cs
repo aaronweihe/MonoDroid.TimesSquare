@@ -1,13 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Java.Util;
-
-using Android.App;
 using Android.Content;
-using Android.OS;
-using Android.Runtime;
 using Android.Util;
 using Android.Views;
 using Android.Widget;
@@ -37,7 +31,7 @@ namespace MonoDroid.TimesSquare
             for (int c = Calendar.Sunday; c <= Calendar.Saturday; c++) {
                 today.Set(CalendarField.DayOfWeek, c);
                 var textView = (TextView)headerRow.GetChildAt(c - 1);
-                var date = Convert.ToDateTime(today.Time.ToGMTString());
+                var date = Convert.ToDateTime(today.Time.ToLocaleString());
                 textView.Text = date.ToString(weekdayNameFormat);
             }
             today.Set(CalendarField.DayOfWeek, originalDayOfWeek);

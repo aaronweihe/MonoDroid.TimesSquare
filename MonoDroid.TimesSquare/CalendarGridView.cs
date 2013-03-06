@@ -31,7 +31,7 @@ namespace MonoDroid.TimesSquare
             base.DispatchDraw(canvas);
             var row = (ViewGroup)GetChildAt(1);
             int top = row.Top;
-            int bottom = row.Bottom;
+            int bottom = Bottom;
 
             //Left side border.
             int left = row.GetChildAt(0).Left + Left;

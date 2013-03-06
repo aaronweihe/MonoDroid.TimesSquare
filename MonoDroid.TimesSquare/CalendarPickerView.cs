@@ -70,8 +70,6 @@ namespace MonoDroid.TimesSquare
                 throw new IllegalArgumentException("Min date must be before max date. " +
                                                    Debug(selectedDate, minDate, maxDate));
             }
-            bool test = selectedDate.Before(minDate);
-            bool test2 = selectedDate.After(maxDate);
             if (selectedDate.Before(minDate) || selectedDate.After(maxDate)) {
                 throw new IllegalArgumentException("Selected date must be between min date and max date. " +
                                                    Debug(selectedDate, minDate, maxDate));
@@ -102,7 +100,7 @@ namespace MonoDroid.TimesSquare
             while ((_monthCounter.Get(CalendarField.Month) <= maxMonth
                     || _monthCounter.Get(CalendarField.Year) < maxYear)
                    && _monthCounter.Get(CalendarField.Year) < maxYear + 1) {
-                var time = Convert.ToDateTime(_monthCounter.Time.ToGMTString());
+                var time = Convert.ToDateTime(_monthCounter.Time.ToLocaleString());
                 var month = new MonthDescriptor(_monthCounter.Get(CalendarField.Month),
                                                             _monthCounter.Get(CalendarField.Year),
                                                             time.ToString(_monthNameFormat));

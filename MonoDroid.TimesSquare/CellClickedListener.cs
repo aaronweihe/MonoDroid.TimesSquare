@@ -17,9 +17,11 @@ namespace MonoDroid.TimesSquare
         public void HandleClick(MonthCellDescriptor cell)
         {
 			if (!CalendarPickerView.IsBetweenDates(cell.DateTime, _calendar.MinCal, _calendar.MaxCal)) {
-                string errorMessage = _context.Resources.GetString(Resource.String.invalid_date,
-                                                                   _calendar.MinCal.ToString(),
-				                                                   _calendar.MaxCal.ToString());
+			    DateTime minDate = Convert.ToDateTime(_calendar.MinCal.Time.ToLocaleString());
+			    DateTime maxDate = Convert.ToDateTime(_calendar.MaxCal.Time.ToLocaleString());
+			    string errorMessage = string.Format(_context.Resources.GetString(Resource.String.invalid_date),
+			                                        minDate.ToShortDateString(),
+			                                        maxDate.ToShortDateString());
                 Toast.MakeText(_context, errorMessage, ToastLength.Short).Show();
             }
             else {

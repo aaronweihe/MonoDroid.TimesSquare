@@ -27,7 +27,6 @@ namespace MonoDroid.TimesSquare.Sample
 		            string toast = "Selected: " + calendar.SelectedDate.Time;
                     Toast.MakeText(this, toast, ToastLength.Short).Show();
 		        };
-
 		}
 	}
 }

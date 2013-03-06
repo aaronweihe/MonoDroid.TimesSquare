@@ -20,6 +20,7 @@ Global
 		{0B028F85-4259-4825-B646-FC60C2EA0041}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
 		{0B028F85-4259-4825-B646-FC60C2EA0041}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B028F85-4259-4825-B646-FC60C2EA0041}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B028F85-4259-4825-B646-FC60C2EA0041}.Release|Any CPU.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
