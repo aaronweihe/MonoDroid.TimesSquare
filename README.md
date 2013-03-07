@@ -25,7 +25,7 @@ This is a fairly large control so it is wise to give it ample space in your layo
 In the `OnCreate` of your activity/dialog or the `OnCreateView` of your fragment, initialize the view with a range of valid dates as well as the currently selected date.
 
 ```c#
-using using Java.Util;
+using Java.Util;
 ...
 
 var nextYear = Calendar.Instance;
