@@ -38,6 +38,12 @@ calendar.Init (new Date (), new Date (), nextYear.Time);
 
 To retrieve the currently selected date, call `calendar.SelectedDate` on the view.
 
+Implementation Details
+----------------------
+
+The idea of original [android-times-square](https://github.com/square/android-times-square) could be found [here](http://corner.squareup.com/2013/01/times-square.html).
+
+>For Android, we use the standard Java Calendar class to do our date calculations. We considered using a third-party date library but decided to keep our library’s footprint as small as possible. As for the layout, we wrote a custom ListView: each row represents one month. Each MonthView uses custom measurement and layout logic for optimal scrolling speed.
 
 Download
 --------
