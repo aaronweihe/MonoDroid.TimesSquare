@@ -34,6 +34,10 @@ namespace MonoDroid.TimesSquare
 			    _calendar.SelectedCal.Time = cell.DateTime;
                 //Update the adapter.
                 _calendar.MyAdapter.NotifyDataSetChanged();
+                
+                if (_calendar.DateListener != null) {
+                    _calendar.DateListener.OnDateSelected(cell.DateTime);
+                }
             }
         }
     }

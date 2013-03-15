@@ -9,8 +9,9 @@ namespace MonoDroid.TimesSquare.Sample
 	[Activity (Label = "MonoDroid.TimesSquare.Sample", MainLauncher = true)]
 	public class Home : Activity
 	{
-	    private static string TAG = "MonoDroid.TimesSquare.Sample";
-		protected override void OnCreate (Bundle bundle)
+	    private const string TAG = "MonoDroid.TimesSquare.Sample";
+
+	    protected override void OnCreate (Bundle bundle)
 		{
 			base.OnCreate (bundle);
 

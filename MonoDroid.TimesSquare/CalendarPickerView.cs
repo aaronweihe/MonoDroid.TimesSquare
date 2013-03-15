@@ -1,16 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-
-using Android.App;
 using Android.Content;
-using Android.Graphics;
-using Android.OS;
-using Android.Runtime;
 using Android.Util;
-using Android.Views;
 using Android.Widget;
 using Java.Lang;
 using Java.Util;
@@ -34,6 +26,8 @@ namespace MonoDroid.TimesSquare
         private readonly Java.Util.Calendar _monthCounter = Java.Util.Calendar.Instance;
 
         public readonly IListener Listener;
+
+        public IOnDateSelectedListener DateListener;
 
         public Java.Util.Calendar SelectedDate
         {
@@ -180,7 +174,7 @@ namespace MonoDroid.TimesSquare
             return IsBetweenDates(date, minCal, maxCal);
         }
 
-        public bool IsSameDate(Java.Util.Calendar cal, Java.Util.Calendar selectedDate)
+        public static bool IsSameDate(Java.Util.Calendar cal, Java.Util.Calendar selectedDate)
         {
             return cal.Get(CalendarField.Month) == selectedDate.Get(CalendarField.Month)
                    && cal.Get(CalendarField.Year) == selectedDate.Get(CalendarField.Year)
@@ -192,7 +186,14 @@ namespace MonoDroid.TimesSquare
             return "selectedDate: " + selectedDate + "\nminDate: " + minDate + "\nmaxDate: " + maxDate;
         }
 
+        public void SetOnDateSelectedListener(IOnDateSelectedListener listener)
+        {
+            DateListener = listener;
+        }
+    }
 
-
+    public interface IOnDateSelectedListener
+    {
+        void OnDateSelected(Date date);
     }
 }
