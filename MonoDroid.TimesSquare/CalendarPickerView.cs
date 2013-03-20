@@ -4,8 +4,6 @@ using System.Globalization;
 using Android.Content;
 using Android.Util;
 using Android.Widget;
-using Java.Lang;
-using Java.Util;
 
 namespace MonoDroid.TimesSquare
 {
@@ -19,17 +17,17 @@ namespace MonoDroid.TimesSquare
         public readonly string FullDateFormat;
         public MonthCellDescriptor SelectedCell;
 
-        public readonly Java.Util.Calendar Today = Java.Util.Calendar.Instance;
-        public readonly Java.Util.Calendar SelectedCal = Java.Util.Calendar.Instance;
-        public readonly Java.Util.Calendar MinCal = Java.Util.Calendar.Instance;
-        public readonly Java.Util.Calendar MaxCal = Java.Util.Calendar.Instance;
-        private readonly Java.Util.Calendar _monthCounter = Java.Util.Calendar.Instance;
+        public readonly DateTime Today = DateTime.Now;
+        public DateTime SelectedCal;
+        public DateTime MinCal;
+        public DateTime MaxCal;
+        private DateTime _monthCounter;
 
         public readonly IListener Listener;
 
         public IOnDateSelectedListener DateListener;
 
-        public Java.Util.Calendar SelectedDate
+        public DateTime SelectedDate
         {
             get { return SelectedCal; }
         }
@@ -39,33 +37,33 @@ namespace MonoDroid.TimesSquare
         {
             ResourceIdManager.UpdateIdValues();
             MyAdapter = new MonthAdapter(context, this);
-			base.Adapter = MyAdapter;
+            base.Adapter = MyAdapter;
             base.Divider = null;
-			base.DividerHeight = 0;
+            base.DividerHeight = 0;
             base.SetBackgroundColor(base.Resources.GetColor(Resource.Color.calendar_bg));
-            base.CacheColorHint = base.Resources.GetColor (Resource.Color.calendar_bg);
+            base.CacheColorHint = base.Resources.GetColor(Resource.Color.calendar_bg);
             _monthNameFormat = base.Resources.GetString(Resource.String.month_name_format);
             WeekdayNameFormat = base.Resources.GetString(Resource.String.day_name_format);
             FullDateFormat = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
             Listener = new CellClickedListener(context, this);
         }
 
-        public void Init(Date selectedDate, Date minDate, Date maxDate)
+        public void Init(DateTime selectedDate, DateTime minDate, DateTime maxDate)
         {
             if (selectedDate == null | minDate == null | maxDate == null) {
-                throw new IllegalArgumentException("All dates must be non-null. " +
+                throw new ArgumentException("All dates must be non-null. " +
                                                    Debug(selectedDate, minDate, maxDate));
             }
-            if (selectedDate.Time == 0 || minDate.Time == 0 | maxDate.Time == 0) {
-                throw new IllegalArgumentException("All dates must be non-zero. " +
+            if (selectedDate == DateTime.MinValue || minDate == DateTime.MinValue | maxDate == DateTime.MinValue) {
+                throw new ArgumentException("All dates can't be DateTime.MinValue " +
                                                    Debug(selectedDate, minDate, maxDate));
             }
-            if (minDate.After(maxDate)) {
-                throw new IllegalArgumentException("Min date must be before max date. " +
+            if (minDate.CompareTo(maxDate) > 0) {
+                throw new ArgumentException("Min date must be before max date. " +
                                                    Debug(selectedDate, minDate, maxDate));
             }
-            if (selectedDate.Before(minDate) || selectedDate.After(maxDate)) {
-                throw new IllegalArgumentException("Selected date must be between min date and max date. " +
+            if (selectedDate.CompareTo(minDate) < 0 || selectedDate.CompareTo(maxDate) > 0) {
+                throw new ArgumentException("Selected date must be between min date and max date. " +
                                                    Debug(selectedDate, minDate, maxDate));
             }
 
@@ -73,38 +71,37 @@ namespace MonoDroid.TimesSquare
             Cells.Clear();
             Months.Clear();
 
-            SelectedCal.Time = selectedDate;
-            MinCal.Time = minDate;
-            MaxCal.Time = maxDate;
-            SetMidnight(SelectedCal);
-            SetMidnight(MinCal);
-            SetMidnight(MaxCal);
+            SelectedCal = selectedDate;
+            MinCal = minDate;
+            MaxCal = maxDate;
+            SelectedCal = SetMidnight(SelectedCal);
+            MinCal = SetMidnight(MinCal);
+            MaxCal = SetMidnight(MaxCal);
 
             // maxDate is exclusive: bump back to the previous day so if maxDate is the first of a month,
             // we don't accidentally include that month in the view.
-            MaxCal.Add(CalendarField.Minute, -1);
+            MaxCal = MaxCal.AddMinutes(-1);
 
-            _monthCounter.Time = MinCal.Time;
-            int maxMonth = MaxCal.Get(CalendarField.Month);
-            int maxYear = MaxCal.Get(CalendarField.Year);
-            int selectedYear = SelectedCal.Get(CalendarField.Year);
-            int selectedMonth = SelectedCal.Get(CalendarField.Month);
+            _monthCounter = MinCal;
+            int maxMonth = MaxCal.Month;
+            int maxYear = MaxCal.Year;
+            int selectedYear = SelectedCal.Year;
+            int selectedMonth = SelectedCal.Month;
             int selectedIndex = 0;
 
-            while ((_monthCounter.Get(CalendarField.Month) <= maxMonth
-                    || _monthCounter.Get(CalendarField.Year) < maxYear)
-                   && _monthCounter.Get(CalendarField.Year) < maxYear + 1) {
-                var time = Convert.ToDateTime(_monthCounter.Time.ToLocaleString());
-                var month = new MonthDescriptor(_monthCounter.Get(CalendarField.Month),
-                                                            _monthCounter.Get(CalendarField.Year),
-                                                            time.ToString(_monthNameFormat));
+            while (_monthCounter.Month <= maxMonth
+                    || _monthCounter.Year < maxYear
+                   && _monthCounter.Year < maxYear + 1) {
+                var month = new MonthDescriptor(_monthCounter.Month,
+                                                            _monthCounter.Year,
+                                                            _monthCounter.ToString(_monthNameFormat));
                 Cells.Add(GetMonthCells(month, _monthCounter, SelectedCal));
                 Logr.D("Adding month {0}", month);
                 if (selectedMonth == month.Month && selectedYear == month.Year) {
                     selectedIndex = Months.Count;
                 }
                 Months.Add(month);
-                _monthCounter.Add(CalendarField.Month, 1);
+                _monthCounter = _monthCounter.AddMonths(1);
             }
             MyAdapter.NotifyDataSetChanged();
             if (selectedIndex != 0) {
@@ -112,76 +109,64 @@ namespace MonoDroid.TimesSquare
             }
         }
 
-        private static void SetMidnight(Java.Util.Calendar cal)
+        private static DateTime SetMidnight(DateTime date)
         {
-            cal.Set(CalendarField.HourOfDay, 0);
-            cal.Set(CalendarField.Minute, 0);
-            cal.Set(CalendarField.Second, 0);
-            cal.Set(CalendarField.Millisecond, 0);
+            return date.Subtract(date.TimeOfDay);
         }
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
         {
             if (Months.Count == 0) {
-                throw new IllegalStateException(
+                throw new InvalidOperationException(
                     "Must have at least one month to display. Did you forget to call Init()?");
             }
             base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
         }
 
-        public List<List<MonthCellDescriptor>> GetMonthCells(MonthDescriptor month, Java.Util.Calendar startCal, Java.Util.Calendar selectedDate)
+        public List<List<MonthCellDescriptor>> GetMonthCells(MonthDescriptor month, DateTime startCal, DateTime selectedDate)
         {
-            Java.Util.Calendar cal = Java.Util.Calendar.Instance;
-            cal.Time = startCal.Time;
             var cells = new List<List<MonthCellDescriptor>>();
-            cal.Set(CalendarField.DayOfMonth, 1);
-            int firstDayOfWeek = cal.Get(CalendarField.DayOfWeek);
-            cal.Add(CalendarField.Date, Java.Util.Calendar.Sunday - firstDayOfWeek);
-            while ((cal.Get(CalendarField.Month) < month.Month + 1 || cal.Get(CalendarField.Year) < month.Year)
-                   && cal.Get(CalendarField.Year) <= month.Year) {
-                Logr.D("Building week row starting at {0}", cal.Time);
+            var cal = new DateTime(startCal.Year, startCal.Month, 1);
+            var firstDayOfWeek = (int)cal.DayOfWeek;
+            cal = cal.AddDays((int)DayOfWeek.Sunday - firstDayOfWeek);
+            while ((cal.Month < month.Month + 1 || cal.Year < month.Year)
+                   && cal.Year <= month.Year) {
+                Logr.D("Building week row starting at {0}", cal);
                 var weekCells = new List<MonthCellDescriptor>();
                 cells.Add(weekCells);
                 for (int i = 0; i < 7; i++) {
-                    Date date = cal.Time;
-                    bool isCurrentMonth = cal.Get(CalendarField.Month) == month.Month;
+                    DateTime date = cal;
+                    bool isCurrentMonth = cal.Month == month.Month;
                     bool isSelected = isCurrentMonth && IsSameDate(cal, selectedDate);
                     bool isSelectable = isCurrentMonth && IsBetweenDates(cal, MinCal, MaxCal);
                     bool isToday = IsSameDate(cal, Today);
-                    int value = cal.Get(CalendarField.DayOfMonth);
+                    int value = cal.Day;
                     var cell =
                         new MonthCellDescriptor(date, isCurrentMonth, isSelectable, isSelected, isToday, value);
                     if (isSelected) {
                         SelectedCell = cell;
                     }
                     weekCells.Add(cell);
-                    cal.Add(CalendarField.Date, 1);
+                    cal = cal.AddDays(1);
                 }
             }
             return cells;
         }
 
-        public static bool IsBetweenDates(Date date, Java.Util.Calendar minCal, Java.Util.Calendar maxCal)
+        public static bool IsBetweenDates(DateTime date, DateTime minCal, DateTime maxCal)
         {
-            Date min = minCal.Time;
-            return (date.Equals(min) || date.After(min)) // >= minCal
-                   && date.Before(maxCal.Time); // && < maxCal
+            return (date.Equals(minCal) || date.CompareTo(minCal) > 0) // >= minCal
+                   && date.CompareTo(maxCal) < 0; // && < maxCal
         }
 
-        public static bool IsBetweenDates(Java.Util.Calendar cal, Java.Util.Calendar minCal, Java.Util.Calendar maxCal)
+        public static bool IsSameDate(DateTime cal, DateTime selectedDate)
         {
-            Date date = cal.Time;
-            return IsBetweenDates(date, minCal, maxCal);
+            return cal.Month == selectedDate.Month
+                   && cal.Year == selectedDate.Year
+                   && cal.Day == selectedDate.Day;
         }
 
-        public static bool IsSameDate(Java.Util.Calendar cal, Java.Util.Calendar selectedDate)
-        {
-            return cal.Get(CalendarField.Month) == selectedDate.Get(CalendarField.Month)
-                   && cal.Get(CalendarField.Year) == selectedDate.Get(CalendarField.Year)
-                   && cal.Get(CalendarField.DayOfMonth) == selectedDate.Get(CalendarField.DayOfMonth);
-        }
-
-        private static string Debug(Date selectedDate, Date minDate, Date maxDate)
+        private static string Debug(DateTime selectedDate, DateTime minDate, DateTime maxDate)
         {
             return "selectedDate: " + selectedDate + "\nminDate: " + minDate + "\nmaxDate: " + maxDate;
         }
@@ -194,6 +179,6 @@ namespace MonoDroid.TimesSquare
 
     public interface IOnDateSelectedListener
     {
-        void OnDateSelected(Date date);
+        void OnDateSelected(DateTime date);
     }
 }

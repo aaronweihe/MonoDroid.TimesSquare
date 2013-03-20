@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Java.Util;
 using Android.Content;
 using Android.Util;
 using Android.Views;
@@ -20,21 +19,20 @@ namespace MonoDroid.TimesSquare
         }
 
         public static MonthView Create(ViewGroup parent, LayoutInflater inflater, string weekdayNameFormat,
-                                       IListener listener, Calendar today)
+                                       IListener listener, DateTime today)
         {
             var view = (MonthView)inflater.Inflate(Resource.Layout.month, parent, false);
 
-            int originalDayOfWeek = today.Get(CalendarField.DayOfWeek);
+            var originalDay = today;
 
             var headerRow = (CalendarRowView)view._grid.GetChildAt(0);
 
-            for (int c = Calendar.Sunday; c <= Calendar.Saturday; c++) {
-                today.Set(CalendarField.DayOfWeek, c);
-                var textView = (TextView)headerRow.GetChildAt(c - 1);
-                var date = Convert.ToDateTime(today.Time.ToLocaleString());
-                textView.Text = date.ToString(weekdayNameFormat);
+            for (var c = (int)DayOfWeek.Sunday; c <=(int)DayOfWeek.Saturday; c++) {
+                today = today.AddDays(c);
+                var textView = (TextView)headerRow.GetChildAt(c);
+                textView.Text = today.ToString(weekdayNameFormat);
             }
-            today.Set(CalendarField.DayOfWeek, originalDayOfWeek);
+            today = originalDay;
             view._listener = listener;
             return view;
         }

@@ -1,6 +1,5 @@
+using System;
 using Android.Widget;
-using Java.Util;
-
 using Android.App;
 using Android.OS;
 
@@ -17,15 +16,16 @@ namespace MonoDroid.TimesSquare.Sample
 
 			SetContentView (Resource.Layout.calendar_picker);
 
-			var nextYear = Calendar.Instance;
-			nextYear.Add (CalendarField.Year, 1);
+	        var nextYear = DateTime.Now.AddYears(20);
 
 			var calendar = FindViewById<CalendarPickerView> (Resource.Id.calendar_view);
-			calendar.Init (new Date (), new Date (), nextYear.Time);
+	        long start = DateTime.Now.Millisecond;
+			calendar.Init (DateTime.Now, DateTime.Now.AddMinutes(-1), nextYear);
+	        Logr.D("Total: {0}", DateTime.Now.Millisecond - start);
 		    FindViewById<Button>(Resource.Id.done_button).Click += (s, o) =>
 		        {
-		            Logr.D(TAG, "Selected time in millis: " + calendar.SelectedDate.Time);
-		            string toast = "Selected: " + calendar.SelectedDate.Time;
+		            Logr.D(TAG, "Selected time in millis: " + calendar.SelectedDate);
+		            string toast = "Selected: " + calendar.SelectedDate;
                     Toast.MakeText(this, toast, ToastLength.Short).Show();
 		        };
 		}
