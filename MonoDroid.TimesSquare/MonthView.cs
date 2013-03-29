@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using Android.Content;
 using Android.Util;
 using Android.Views;
@@ -27,12 +28,16 @@ namespace MonoDroid.TimesSquare
 
             var headerRow = (CalendarRowView)view._grid.GetChildAt(0);
 
-            for (var c = (int)DayOfWeek.Sunday; c <=(int)DayOfWeek.Saturday; c++) {
-                today = today.AddDays(c);
-                var textView = (TextView)headerRow.GetChildAt(c);
+            var firstDayOfWekk = (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+
+            for (int i = 0; i < 7; i++) {
+                var offset = firstDayOfWekk - (int) today.DayOfWeek + i;
+                today = today.AddDays(offset);
+                var textView = (TextView) headerRow.GetChildAt(i);
+                string test = today.ToString(weekdayNameFormat);
                 textView.Text = today.ToString(weekdayNameFormat);
+                today = originalDay;
             }
-            today = originalDay;
             view._listener = listener;
             return view;
         }

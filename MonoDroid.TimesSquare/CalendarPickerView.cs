@@ -128,7 +128,7 @@ namespace MonoDroid.TimesSquare
             var cells = new List<List<MonthCellDescriptor>>();
             var cal = new DateTime(startCal.Year, startCal.Month, 1);
             var firstDayOfWeek = (int)cal.DayOfWeek;
-            cal = cal.AddDays((int)DayOfWeek.Sunday - firstDayOfWeek);
+            cal = cal.AddDays((int) CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - firstDayOfWeek);
             while ((cal.Month < month.Month + 1 || cal.Year < month.Year)
                    && cal.Year <= month.Year) {
                 Logr.D("Building week row starting at {0}", cal);
