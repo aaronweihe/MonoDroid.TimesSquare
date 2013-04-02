@@ -34,7 +34,6 @@ namespace MonoDroid.TimesSquare
                 var offset = firstDayOfWekk - (int) today.DayOfWeek + i;
                 today = today.AddDays(offset);
                 var textView = (TextView) headerRow.GetChildAt(i);
-                string test = today.ToString(weekdayNameFormat);
                 textView.Text = today.ToString(weekdayNameFormat);
                 today = originalDay;
             }
