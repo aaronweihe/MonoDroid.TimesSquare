@@ -24,7 +24,7 @@ namespace MonoDroid.TimesSquare.Sample
 		    FindViewById<Button>(Resource.Id.done_button).Click += (s, o) =>
 		        {
 		            Logr.D(TAG, "Selected time in millis: " + calendar.SelectedDate);
-		            string toast = "Selected: " + calendar.SelectedDate;
+                    string toast = "Selected: " + calendar.SelectedDate;
                     Toast.MakeText(this, toast, ToastLength.Short).Show();
 		        };
 		}

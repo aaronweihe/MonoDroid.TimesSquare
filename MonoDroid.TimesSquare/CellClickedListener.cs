@@ -23,18 +23,41 @@ namespace MonoDroid.TimesSquare
                 Toast.MakeText(_context, errorMessage, ToastLength.Short).Show();
             }
             else {
-                //De-select the currently-selected cell.
-                _calendar.SelectedCell.IsSelected = false;
-                //Select the new cell.
-                _calendar.SelectedCell = cell;
-                _calendar.SelectedCell.IsSelected = true;
-                //Track the currently selected date value.
-			    _calendar.SelectedCal = cell.DateTime;
-                //Update the adapter.
+			    var selectedDate = cell.DateTime;
+                if (_calendar.IsMultiSelect) {
+                    foreach (var selectedCell in _calendar.SelectedCells) {
+                        if (selectedCell.DateTime.CompareTo(selectedDate) == 0) {
+                            selectedCell.IsSelected = false;
+                            _calendar.SelectedCells.Remove(selectedCell);
+                            selectedDate = DateTime.MinValue;
+                            break;
+                        }
+                    }
+                    foreach (var cal in _calendar.SelectedCals) {
+                        if (cal.CompareTo(selectedDate) == 0) {
+                            _calendar.SelectedCals.Remove(cal);
+                            break;
+                        }
+                    }
+                }
+                else {
+                    foreach (var selectedCell in _calendar.SelectedCells) {
+                        selectedCell.IsSelected = false;
+                    }
+                    _calendar.SelectedCells.Clear();
+                    _calendar.SelectedCals.Clear();
+                }
+
+                if (selectedDate != DateTime.MinValue) {
+                    _calendar.SelectedCells.Add(cell);
+                    cell.IsSelected = true;
+                    _calendar.SelectedCals.Add(selectedDate);
+                }
+
                 _calendar.MyAdapter.NotifyDataSetChanged();
                 
-                if (_calendar.DateListener != null) {
-                    _calendar.DateListener.OnDateSelected(cell.DateTime);
+                if (selectedDate!=null && _calendar.DateListener != null) {
+                    _calendar.DateListener.OnDateSelected(selectedDate);
                 }
             }
         }
