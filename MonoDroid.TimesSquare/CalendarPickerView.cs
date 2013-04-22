@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Linq;
 using Android.Content;
 using Android.Util;
@@ -210,7 +211,7 @@ namespace MonoDroid.TimesSquare
 
         private void ScrolltoSelectedMonth(int selectedIndex)
         {
-            SmoothScrollToPosition(selectedIndex);
+            Task.Factory.StartNew(() => SmoothScrollToPosition(selectedIndex));
         }
         
         private MonthCellWithMonthIndex GetMonthCellWithIndexByDate(DateTime date)
