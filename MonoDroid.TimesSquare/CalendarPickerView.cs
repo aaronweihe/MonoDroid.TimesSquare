@@ -44,6 +44,48 @@ namespace MonoDroid.TimesSquare
             get { return SelectedCals.Count > 0 ? SelectedCals[0] : DateTime.MinValue; }
         }
 
+        public bool SetSelectedDate(DateTime date)
+        {
+            var monthCellWithMonthIndex = GetMonthCellWithIndexByDate(date);
+            if (monthCellWithMonthIndex == null) {
+                return false;
+            }
+
+            SelectedCells.Clear();
+            monthCellWithMonthIndex.Cell.IsSelected = true;
+            SelectedCells.Add(monthCellWithMonthIndex.Cell);
+            SelectedCals.Clear();
+            SelectedCals.Add(monthCellWithMonthIndex.Cell.DateTime);
+            if (monthCellWithMonthIndex.MonthIndex != 0) {
+                ScrolltoSelectedMonth(monthCellWithMonthIndex.MonthIndex);
+            }
+
+            MyAdapter.NotifyDataSetChanged();
+            return true;
+        }
+
+        private void ScrolltoSelectedMonth(int selectedIndex)
+        {
+            SmoothScrollToPosition(selectedIndex);
+        }
+        private MonthCellWithMonthIndex GetMonthCellWithIndexByDate(DateTime date)
+        {
+            int index = 0;
+
+            foreach (var monthCell in Cells) {
+                foreach (
+                    var actCell in
+                        from weekCell in monthCell
+                        from actCell in weekCell
+                        where IsSameDate(actCell.DateTime, date)
+                        select actCell) {
+                    return new MonthCellWithMonthIndex(actCell, index);
+                }
+                index++;
+            }
+            return null;
+        }
+
         public CalendarPickerView(Context context, IAttributeSet attrs)
             : base(context, attrs)
         {
@@ -243,5 +285,17 @@ namespace MonoDroid.TimesSquare
     public interface IOnDateSelectedListener
     {
         void OnDateSelected(DateTime date);
+    }
+
+    class MonthCellWithMonthIndex
+    {
+        public MonthCellDescriptor Cell;
+        public int MonthIndex;
+
+        public MonthCellWithMonthIndex(MonthCellDescriptor cell, int monthIndex)
+        {
+            Cell = cell;
+            MonthIndex = monthIndex;
+        }
     }
 }
