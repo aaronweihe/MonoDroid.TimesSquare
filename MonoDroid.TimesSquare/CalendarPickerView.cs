@@ -1,12 +1,10 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Android.Content;
 using Android.Util;
 using Android.Widget;
-using Java.Lang;
 
 namespace MonoDroid.TimesSquare
 {
@@ -99,8 +97,8 @@ namespace MonoDroid.TimesSquare
             if (selectedDates != null) {
                 //Prevent from possible multiple enmuration of IEnumerable
                 var lstSelectedDates = selectedDates.ToList();
-                for (int i = 0; i < lstSelectedDates.Count; i++) {
-                    var date = lstSelectedDates[i];
+                foreach (var t in lstSelectedDates) {
+                    var date = t;
                     if (date == DateTime.MinValue) {
                         throw new ArgumentException("Selected date must be greater than DateTime.MinValue. " +
                                                     Debug(lstSelectedDates, minDate, maxDate));
@@ -143,11 +141,8 @@ namespace MonoDroid.TimesSquare
                 Cells.Add(GetMonthCells(month, _monthCounter));
                 Logr.D("Adding month {0}", month);
                 if (selectedIndex == 0) {
-                    foreach (var cal in SelectedCals) {
-                        if (cal.Month == month.Month && cal.Year == month.Year) {
-                            selectedIndex = Months.Count;
-                            break;
-                        }
+                    if (SelectedCals.Any(cal => cal.Month == month.Month && cal.Year == month.Year)) {
+                        selectedIndex = Months.Count;
                     }
                     if (selectedIndex == 0 && todayIndex == 0
                         && today.Month == month.Month && today.Year == month.Year) {

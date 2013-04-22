@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using Android.Content;
 using Android.Util;
 using Android.Views;
@@ -79,7 +77,7 @@ namespace MonoDroid.TimesSquare
             long start = DateTime.Now.Millisecond;
             t = 0;
             for (int c = 0; c < ChildCount; c++) {
-                View child = GetChildAt(c);
+                var child = GetChildAt(c);
                 int rowHeight = child.MeasuredHeight;
                 child.Layout(l, t, r, t + rowHeight);
                 t += rowHeight;

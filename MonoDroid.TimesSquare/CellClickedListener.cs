@@ -56,7 +56,7 @@ namespace MonoDroid.TimesSquare
 
                 _calendar.MyAdapter.NotifyDataSetChanged();
                 
-                if (selectedDate!=null && _calendar.DateListener != null) {
+                if (_calendar.DateListener != null) {
                     _calendar.DateListener.OnDateSelected(selectedDate);
                 }
             }
