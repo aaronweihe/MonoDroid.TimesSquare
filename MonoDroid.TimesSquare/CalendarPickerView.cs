@@ -44,48 +44,6 @@ namespace MonoDroid.TimesSquare
             get { return SelectedCals.Count > 0 ? SelectedCals[0] : DateTime.MinValue; }
         }
 
-        public bool SetSelectedDate(DateTime date)
-        {
-            var monthCellWithMonthIndex = GetMonthCellWithIndexByDate(date);
-            if (monthCellWithMonthIndex == null) {
-                return false;
-            }
-
-            SelectedCells.Clear();
-            monthCellWithMonthIndex.Cell.IsSelected = true;
-            SelectedCells.Add(monthCellWithMonthIndex.Cell);
-            SelectedCals.Clear();
-            SelectedCals.Add(monthCellWithMonthIndex.Cell.DateTime);
-            if (monthCellWithMonthIndex.MonthIndex != 0) {
-                ScrolltoSelectedMonth(monthCellWithMonthIndex.MonthIndex);
-            }
-
-            MyAdapter.NotifyDataSetChanged();
-            return true;
-        }
-
-        private void ScrolltoSelectedMonth(int selectedIndex)
-        {
-            SmoothScrollToPosition(selectedIndex);
-        }
-        private MonthCellWithMonthIndex GetMonthCellWithIndexByDate(DateTime date)
-        {
-            int index = 0;
-
-            foreach (var monthCell in Cells) {
-                foreach (
-                    var actCell in
-                        from weekCell in monthCell
-                        from actCell in weekCell
-                        where IsSameDate(actCell.DateTime, date)
-                        select actCell) {
-                    return new MonthCellWithMonthIndex(actCell, index);
-                }
-                index++;
-            }
-            return null;
-        }
-
         public CalendarPickerView(Context context, IAttributeSet attrs)
             : base(context, attrs)
         {
@@ -200,20 +158,6 @@ namespace MonoDroid.TimesSquare
             }
         }
 
-        private static DateTime SetMidnight(DateTime date)
-        {
-            return date.Subtract(date.TimeOfDay);
-        }
-
-        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
-        {
-            if (Months.Count == 0) {
-                throw new InvalidOperationException(
-                    "Must have at least one month to display. Did you forget to call Init()?");
-            }
-            base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
-        }
-
         public List<List<MonthCellDescriptor>> GetMonthCells(MonthDescriptor month, DateTime startCal)
         {
             var cells = new List<List<MonthCellDescriptor>>();
@@ -242,6 +186,63 @@ namespace MonoDroid.TimesSquare
                 }
             }
             return cells;
+        }
+
+        public bool SetSelectedDate(DateTime date)
+        {
+            var monthCellWithMonthIndex = GetMonthCellWithIndexByDate(date);
+            if (monthCellWithMonthIndex == null) {
+                return false;
+            }
+
+            SelectedCells.Clear();
+            monthCellWithMonthIndex.Cell.IsSelected = true;
+            SelectedCells.Add(monthCellWithMonthIndex.Cell);
+            SelectedCals.Clear();
+            SelectedCals.Add(monthCellWithMonthIndex.Cell.DateTime);
+            if (monthCellWithMonthIndex.MonthIndex != 0) {
+                ScrolltoSelectedMonth(monthCellWithMonthIndex.MonthIndex);
+            }
+
+            MyAdapter.NotifyDataSetChanged();
+            return true;
+        }
+
+        private void ScrolltoSelectedMonth(int selectedIndex)
+        {
+            SmoothScrollToPosition(selectedIndex);
+        }
+        
+        private MonthCellWithMonthIndex GetMonthCellWithIndexByDate(DateTime date)
+        {
+            int index = 0;
+
+            foreach (var monthCell in Cells) {
+                foreach (
+                    var actCell in
+                        from weekCell in monthCell
+                        from actCell in weekCell
+                        where IsSameDate(actCell.DateTime, date)
+                        select actCell) {
+                    return new MonthCellWithMonthIndex(actCell, index);
+                }
+                index++;
+            }
+            return null;
+        }
+
+        protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
+        {
+            if (Months.Count == 0) {
+                throw new InvalidOperationException(
+                    "Must have at least one month to display. Did you forget to call Init()?");
+            }
+            base.OnMeasure(widthMeasureSpec, heightMeasureSpec);
+        }
+
+        private static DateTime SetMidnight(DateTime date)
+        {
+            return date.Subtract(date.TimeOfDay);
         }
 
         public static bool IsBetweenDates(DateTime date, DateTime minCal, DateTime maxCal)
@@ -280,6 +281,7 @@ namespace MonoDroid.TimesSquare
         {
             DateListener = listener;
         }
+
     }
 
     public interface IOnDateSelectedListener
