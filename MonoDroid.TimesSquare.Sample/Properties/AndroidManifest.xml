@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" android:installLocation="auto">
 	<uses-sdk android:minSdkVersion="4" android:targetSdkVersion="17" />
-	<application android:label="MonoDroid.TimesSquare Sample" android:icon="@drawable/icon"></application>
+	<application android:label="MonoDroid.TimesSquare Sample" android:icon="@drawable/icon" android:supportsRtl="true"></application>
 </manifest>
