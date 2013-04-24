@@ -219,14 +219,11 @@ namespace MonoDroid.TimesSquare
             int index = 0;
 
             foreach (var monthCell in Cells) {
-                foreach (
-                    var actCell in
-                        from weekCell in monthCell
-                        from actCell in weekCell
-                        where IsSameDate(actCell.DateTime, date)
-                        select actCell) {
+                foreach (MonthCellDescriptor actCell in from weekCell in monthCell
+                                                        from actCell in weekCell
+                                                        where IsSameDate(actCell.DateTime, date) && actCell.IsSelectable
+                                                        select actCell)
                     return new MonthCellWithMonthIndex(actCell, index);
-                }
                 index++;
             }
             return null;
