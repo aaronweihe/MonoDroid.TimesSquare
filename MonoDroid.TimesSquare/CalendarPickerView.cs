@@ -59,6 +59,10 @@ namespace MonoDroid.TimesSquare
             WeekdayNameFormat = base.Resources.GetString(Resource.String.day_name_format);
             FullDateFormat = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
             Listener = new CellClickedListener(context, this);
+
+            if (base.IsInEditMode) {
+                Init(DateTime.Now, DateTime.Now.AddMinutes(1), DateTime.Now.AddYears(1));
+            }
         }
 
         public void Init(DateTime minDate, DateTime maxDate)
