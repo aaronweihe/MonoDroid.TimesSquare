@@ -24,7 +24,7 @@ namespace MonoDroid.TimesSquare
             }
             else {
 			    var selectedDate = cell.DateTime;
-                if (_calendar.IsMultiSelect) {
+                if (_calendar.Mode == CalendarPickerView.SelectionMode.Multi) {
                     foreach (var selectedCell in _calendar.SelectedCells) {
                         if (selectedCell.DateTime.CompareTo(selectedDate) == 0) {
                             selectedCell.IsSelected = false;

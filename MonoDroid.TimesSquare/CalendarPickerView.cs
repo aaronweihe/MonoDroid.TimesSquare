@@ -17,7 +17,17 @@ namespace MonoDroid.TimesSquare
         private readonly string _monthNameFormat;
         public readonly string WeekdayNameFormat;
         public readonly string FullDateFormat;
-        public bool IsMultiSelect { get; set; }
+
+        public enum SelectionMode
+        {
+            Single,
+            Multi,
+            Period,
+            Selectedperiod
+        };
+
+        public SelectionMode Mode { get; set; }
+
         public List<MonthCellDescriptor> SelectedCells = new List<MonthCellDescriptor>(); 
 
         public readonly DateTime Today = DateTime.Now;
@@ -30,11 +40,17 @@ namespace MonoDroid.TimesSquare
 
         public IOnDateSelectedListener DateListener;
 
-        public IEnumerable<DateTime> SelectedDates
+        public List<DateTime> SelectedDates
         {
             get
             {
                 var lstSelectedDates = SelectedCals.ToList();
+                //Add all days in the period.
+                if (Mode == SelectionMode.Selectedperiod) {
+                    for (int i = 2; i < SelectedCells.Count; i++) {
+                        lstSelectedDates.Add(SelectedCells[i].DateTime);
+                    }
+                }
                 lstSelectedDates.Sort();
                 return lstSelectedDates;
             }
@@ -72,13 +88,13 @@ namespace MonoDroid.TimesSquare
 
         public void Init(DateTime selectedDate, DateTime minDate, DateTime maxDate)
         {
-            IsMultiSelect = false;
+            Mode = SelectionMode.Single;
             Initialize(new List<DateTime> {selectedDate}, minDate, maxDate);
         }
 
-        public void Init(IEnumerable<DateTime> selectedDates, DateTime minDate, DateTime maxDate)
+        public void Init(IEnumerable<DateTime> selectedDates, DateTime minDate, DateTime maxDate, SelectionMode mode)
         {
-            IsMultiSelect = true;
+            Mode = mode;
             Initialize(selectedDates, minDate, maxDate);
         }
 
