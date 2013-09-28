@@ -2,34 +2,46 @@ using System;
 
 namespace MonoDroid.TimesSquare
 {
-    public class MonthCellDescriptor:Java.Lang.Object
+    public enum RangeState
+    {
+        None,
+        First,
+        Middle,
+        Last
+    }
+
+    public class MonthCellDescriptor : Java.Lang.Object
     {
         public DateTime DateTime { get; set; }
-        public  int Value { get; set; }
+        public int Value { get; set; }
         public bool IsCurrentMonth { get; set; }
         public bool IsSelected { get; set; }
-        public  bool IsToday { get; set; }
-        public  bool IsSelectable { get; set; }
+        public bool IsToday { get; set; }
+        public bool IsSelectable { get; set; }
+        public RangeState RangeState { get; set; }
 
-        public MonthCellDescriptor(DateTime date, bool isCurrentMonth, bool isSelectable, bool isSelected, bool isToday, int value)
+        public MonthCellDescriptor(DateTime date, bool isCurrentMonth, bool isSelectable, bool isSelected,
+            bool isToday, int value, RangeState rangeState)
         {
             DateTime = date;
             Value = value;
             IsCurrentMonth = isCurrentMonth;
-			IsSelected = isSelected;
-			IsToday = isToday;
-			IsSelectable = isSelectable;
+            IsSelected = isSelected;
+            IsToday = isToday;
+            IsSelectable = isSelectable;
+            RangeState = rangeState;
         }
 
         public override string ToString()
         {
             return "MonthCellDescriptor{"
-                   + "date=" + DateTime
-                   + ", value=" + Value
-                   + ", isCurrentMonth=" + IsCurrentMonth
-                   + ", isSelected=" + IsSelected
-                   + ", isToday=" + IsToday
-                   + ", isSelectable=" + IsSelectable
+                   + "Date=" + DateTime
+                   + ", Value=" + Value
+                   + ", IsCurrentMonth=" + IsCurrentMonth
+                   + ", IsSelected=" + IsSelected
+                   + ", IsToday=" + IsToday
+                   + ", IsSelectable=" + IsSelectable
+                   + ", RangeSTate=" + RangeState
                    + "}";
         }
     }

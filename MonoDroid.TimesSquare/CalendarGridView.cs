@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using Android.Content;
 using Android.Util;
 using Android.Views;
@@ -9,6 +10,8 @@ namespace MonoDroid.TimesSquare
     public class CalendarGridView : ViewGroup
     {
         private readonly Paint _dividerPaint = new Paint();
+        private int _oldWidthMeasureSize;
+        private int _oldNumRows;
 
         public CalendarGridView(Context context, IAttributeSet attrs)
             : base(context, attrs)
@@ -19,7 +22,7 @@ namespace MonoDroid.TimesSquare
         public override void AddView(View child, int index, LayoutParams @params)
         {
             if (ChildCount == 0) {
-                ((CalendarRowView)child).IsHeaderRow = true;
+                ((CalendarRowView) child).IsHeaderRow = true;
             }
             base.AddView(child, index, @params);
         }
@@ -27,7 +30,7 @@ namespace MonoDroid.TimesSquare
         protected override void DispatchDraw(Canvas canvas)
         {
             base.DispatchDraw(canvas);
-            var row = (ViewGroup)GetChildAt(1);
+            var row = (ViewGroup) GetChildAt(1);
             int top = row.Top;
             int bottom = Bottom;
 
@@ -53,28 +56,46 @@ namespace MonoDroid.TimesSquare
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
         {
-            long start = DateTime.Now.Millisecond;
-            int totalWidth = MeasureSpec.GetSize(widthMeasureSpec);
-            int cellSize = totalWidth / 7;
-            totalWidth = cellSize * 7;
+            Logr.D("Grid.OnMeasure w={0} h={1}", MeasureSpec.ToString(widthMeasureSpec),
+                MeasureSpec.ToString(heightMeasureSpec));
+
+            int widthMeasureSize = MeasureSpec.GetSize(widthMeasureSpec);
+            if (_oldWidthMeasureSize == widthMeasureSize) {
+                Logr.D("SKIP Grid.OnMeasure");
+                SetMeasuredDimension(MeasuredWidth, MeasuredHeight);
+                return;
+            }
+
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            _oldWidthMeasureSize = widthMeasureSize;
+            int cellSize = widthMeasureSize/7;
+            //Remove any extra pixels since /7 us unlikey to give whole nums.
+            widthMeasureSize = cellSize*7;
             int totalHeight = 0;
-            int rowWidthSpec = MeasureSpec.MakeMeasureSpec(totalWidth, MeasureSpecMode.Exactly);
+            int rowWidthSpec = MeasureSpec.MakeMeasureSpec(widthMeasureSize, MeasureSpecMode.Exactly);
             int rowHeightSpec = MeasureSpec.MakeMeasureSpec(cellSize, MeasureSpecMode.Exactly);
             for (int c = 0; c < ChildCount; c++) {
-                View child = GetChildAt(c);
+                var child = GetChildAt(c);
                 if (child.Visibility == ViewStates.Visible) {
                     MeasureChild(child, rowWidthSpec,
-                                 c == 0 ? MeasureSpec.MakeMeasureSpec(cellSize, MeasureSpecMode.AtMost) : rowHeightSpec);
+                        c == 0 ? MeasureSpec.MakeMeasureSpec(cellSize, MeasureSpecMode.AtMost) : rowHeightSpec);
                     totalHeight += child.MeasuredHeight;
                 }
             }
-            int measuredWidth = totalWidth + 2; // Fudge factor to make the borders show up right.
+            int measuredWidth = widthMeasureSize + 2; // Fudge factor to make the borders show up right.
             SetMeasuredDimension(measuredWidth, totalHeight);
-            Logr.D("Grid.OnMeasure {0} ms", DateTime.Now.Millisecond - start);
+
+            stopwatch.Stop();
+            Logr.D("Grid.OnMeasure {0} ms", stopwatch.ElapsedMilliseconds);
         }
+
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
-            long start = DateTime.Now.Millisecond;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             t = 0;
             for (int c = 0; c < ChildCount; c++) {
                 var child = GetChildAt(c);
@@ -82,7 +103,21 @@ namespace MonoDroid.TimesSquare
                 child.Layout(l, t, r, t + rowHeight);
                 t += rowHeight;
             }
-            Logr.D("Grid.OnLayout {0} ms", DateTime.Now.Millisecond - start);
+
+            stopwatch.Stop();
+            Logr.D("Grid.OnLayout {0} ms", stopwatch.ElapsedMilliseconds);
+        }
+
+
+        public int NumRows
+        {
+            set
+            {
+                if (_oldNumRows != value) {
+                    _oldWidthMeasureSize = 0;
+                }
+                _oldNumRows = value;
+            }
         }
     }
 }

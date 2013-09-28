@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Linq;
 using Android.Content;
@@ -13,10 +15,14 @@ namespace MonoDroid.TimesSquare
     {
         public readonly MonthAdapter MyAdapter;
         public readonly List<MonthDescriptor> Months = new List<MonthDescriptor>();
-        public readonly List<List<List<MonthCellDescriptor>>> Cells = new List<List<List<MonthCellDescriptor>>>();
+
+        public readonly List<List<List<MonthCellDescriptor>>> Cells =
+            new List<List<List<MonthCellDescriptor>>>();
+
         private readonly string _monthNameFormat;
         public readonly string WeekdayNameFormat;
         public readonly string FullDateFormat;
+        private readonly Context _context;
 
         public enum SelectionMode
         {
@@ -28,10 +34,10 @@ namespace MonoDroid.TimesSquare
 
         public SelectionMode Mode { get; set; }
 
-        public List<MonthCellDescriptor> SelectedCells = new List<MonthCellDescriptor>(); 
+        public List<MonthCellDescriptor> SelectedCells = new List<MonthCellDescriptor>();
 
         public readonly DateTime Today = DateTime.Now;
-        public List<DateTime> SelectedCals = new List<DateTime>(); 
+        public List<DateTime> SelectedCals = new List<DateTime>();
         public DateTime MinCal;
         public DateTime MaxCal;
         private DateTime _monthCounter;
@@ -39,6 +45,7 @@ namespace MonoDroid.TimesSquare
         public readonly IListener Listener;
 
         public IOnDateSelectedListener DateListener;
+        private IOnInvalidDateSelectedListener _invalidDateSelectedListener;
 
         public List<DateTime> SelectedDates
         {
@@ -75,6 +82,7 @@ namespace MonoDroid.TimesSquare
             WeekdayNameFormat = base.Resources.GetString(Resource.String.day_name_format);
             FullDateFormat = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
             Listener = new CellClickedListener(context, this);
+            _invalidDateSelectedListener = new DefaultOnInvalidDateSelectedListener(context, this);
 
             if (base.IsInEditMode) {
                 Init(DateTime.Now, DateTime.Now.AddMinutes(1), DateTime.Now.AddYears(1));
@@ -92,7 +100,8 @@ namespace MonoDroid.TimesSquare
             Initialize(new List<DateTime> {selectedDate}, minDate, maxDate);
         }
 
-        public void Init(IEnumerable<DateTime> selectedDates, DateTime minDate, DateTime maxDate, SelectionMode mode)
+        public void Init(IEnumerable<DateTime> selectedDates, DateTime minDate, DateTime maxDate,
+            SelectionMode mode)
         {
             Mode = mode;
             Initialize(selectedDates, minDate, maxDate);
@@ -100,17 +109,17 @@ namespace MonoDroid.TimesSquare
 
         public void Initialize(IEnumerable<DateTime> selectedDates, DateTime minDate, DateTime maxDate)
         {
-            if ( minDate == null || maxDate == null) {
+            if (minDate == null || maxDate == null) {
                 throw new ArgumentException("All dates must be non-null. " +
-                                                   Debug(selectedDates, minDate, maxDate));
+                                            Debug(selectedDates, minDate, maxDate));
             }
             if (minDate == DateTime.MinValue || maxDate == DateTime.MinValue) {
                 throw new ArgumentException("All dates must be greater than DateTime.MinValue. " +
-                                                   Debug(selectedDates, minDate, maxDate));
+                                            Debug(selectedDates, minDate, maxDate));
             }
             if (minDate.CompareTo(maxDate) > 0) {
                 throw new ArgumentException("Min date must be before max date. " +
-                                                   Debug(selectedDates, minDate, maxDate));
+                                            Debug(selectedDates, minDate, maxDate));
             }
 
             SelectedCals.Clear();
@@ -154,11 +163,11 @@ namespace MonoDroid.TimesSquare
             var today = DateTime.Now;
 
             while (_monthCounter.Month <= maxMonth
-                    || _monthCounter.Year < maxYear
+                   || _monthCounter.Year < maxYear
                    && _monthCounter.Year < maxYear + 1) {
                 var month = new MonthDescriptor(_monthCounter.Month,
-                                                            _monthCounter.Year,
-                                                            _monthCounter.ToString(_monthNameFormat));
+                    _monthCounter.Year,
+                    _monthCounter.ToString(_monthNameFormat));
                 Cells.Add(GetMonthCells(month, _monthCounter));
                 Logr.D("Adding month {0}", month);
                 if (selectedIndex == 0) {
@@ -183,7 +192,7 @@ namespace MonoDroid.TimesSquare
         {
             var cells = new List<List<MonthCellDescriptor>>();
             var cal = new DateTime(startCal.Year, startCal.Month, 1);
-            var firstDayOfWeek = (int)cal.DayOfWeek;
+            var firstDayOfWeek = (int) cal.DayOfWeek;
             cal = cal.AddDays((int) CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek - firstDayOfWeek);
             while ((cal.Month < month.Month + 1 || cal.Year < month.Year)
                    && cal.Year <= month.Year) {
@@ -233,16 +242,16 @@ namespace MonoDroid.TimesSquare
         {
             Task.Factory.StartNew(() => SmoothScrollToPosition(selectedIndex));
         }
-        
+
         private MonthCellWithMonthIndex GetMonthCellWithIndexByDate(DateTime date)
         {
             int index = 0;
 
             foreach (var monthCell in Cells) {
                 foreach (MonthCellDescriptor actCell in from weekCell in monthCell
-                                                        from actCell in weekCell
-                                                        where IsSameDate(actCell.DateTime, date) && actCell.IsSelectable
-                                                        select actCell)
+                    from actCell in weekCell
+                    where IsSameDate(actCell.DateTime, date) && actCell.IsSelectable
+                    select actCell)
                     return new MonthCellWithMonthIndex(actCell, index);
                 index++;
             }
@@ -289,7 +298,8 @@ namespace MonoDroid.TimesSquare
             }
             else {
                 debugMessage += "\nselectedDates: ";
-                debugMessage = selectedDates.Aggregate(debugMessage, (current, date) => current + (date + "; "));
+                debugMessage = selectedDates.Aggregate(debugMessage,
+                    (current, date) => current + (date + "; "));
             }
 
             return debugMessage;
@@ -300,6 +310,25 @@ namespace MonoDroid.TimesSquare
             DateListener = listener;
         }
 
+        private class DefaultOnInvalidDateSelectedListener : IOnInvalidDateSelectedListener
+        {
+            private readonly Context _context;
+            private readonly CalendarPickerView _calendar;
+
+            public DefaultOnInvalidDateSelectedListener(Context context, CalendarPickerView calendar)
+            {
+                _context = context;
+                _calendar = calendar;
+            }
+
+            public void OnInvalidDateSelected(DateTime date)
+            {
+                string fullDateFormat = _context.Resources.GetString(Resource.String.full_date_format);
+                string errorMsg = _context.Resources.GetString(Resource.String.invalid_date,
+                    _calendar.MinCal.ToString(fullDateFormat), _calendar.MaxCal.ToString(fullDateFormat));
+                Toast.MakeText(_context, errorMsg, ToastLength.Short).Show();
+            }
+        }
     }
 
     public interface IOnDateSelectedListener
@@ -307,7 +336,17 @@ namespace MonoDroid.TimesSquare
         void OnDateSelected(DateTime date);
     }
 
-    class MonthCellWithMonthIndex
+    public interface IOnInvalidDateSelectedListener
+    {
+        void OnInvalidDateSelected(DateTime date);
+    }
+
+    public interface IDateSelectableFilter
+    {
+        bool IsDateSelectable(DateTime date);
+    }
+
+    public class MonthCellWithMonthIndex
     {
         public MonthCellDescriptor Cell;
         public int MonthIndex;

@@ -1,15 +1,19 @@
+using System;
+
 namespace MonoDroid.TimesSquare
 {
     public class MonthDescriptor
     {
         public int Month { get; private set; }
         public int Year { get; private set; }
+        public DateTime Date { get; private set; }
         public string Label { get; private set; }
 
-        public MonthDescriptor(int month, int year, string label)
+        public MonthDescriptor(int month, int year, DateTime date, string label)
         {
             Month = month;
             Year = year;
+            Date = date;
             Label = label;
         }
 

@@ -48,18 +48,12 @@
           android:layout_height="wrap_content"
           style="@style/CalendarCell.DayHeader" />
     </monodroid.timessquare.CalendarRowView>
-    <include
-        layout="@layout/week" />
-    <include
-        layout="@layout/week" />
-    <include
-        layout="@layout/week" />
-    <include
-        layout="@layout/week" />
-    <include
-        layout="@layout/week" />
-    <include
-        layout="@layout/week" />
+    <include layout="@layout/week" />
+    <include layout="@layout/week" />
+    <include layout="@layout/week" />
+    <include layout="@layout/week" />
+    <include layout="@layout/week" />
+    <include layout="@layout/week" />
     </monodroid.timessquare.CalendarGridView>
 
 </monodroid.timessquare.MonthView>

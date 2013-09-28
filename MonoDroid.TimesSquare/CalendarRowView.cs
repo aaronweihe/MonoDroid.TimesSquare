@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using Android.Content;
 using Android.Util;
 using Android.Views;
@@ -26,20 +27,18 @@ namespace MonoDroid.TimesSquare
 
         protected override void OnMeasure(int widthMeasureSpec, int heightMeasureSpec)
         {
-            if (_oldWidthMeasureSpec == widthMeasureSpec && _oldHeightMeasureSpec == heightMeasureSpec) {
-                Logr.D("Skip Row.OnMeasure");
-                SetMeasuredDimension(MeasuredWidth, MeasuredHeight);
-                return;
-            }
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            long start = DateTime.Now.Millisecond;
             int totalWidth = MeasureSpec.GetSize(widthMeasureSpec);
             _cellSize = totalWidth / 7;
             int cellWidthSpec = MeasureSpec.MakeMeasureSpec(_cellSize, MeasureSpecMode.Exactly);
-            int cellHeightSpec = IsHeaderRow ? MeasureSpec.MakeMeasureSpec(_cellSize, MeasureSpecMode.AtMost) : cellWidthSpec;
+            int cellHeightSpec = IsHeaderRow
+                ? MeasureSpec.MakeMeasureSpec(_cellSize, MeasureSpecMode.AtMost)
+                : cellWidthSpec;
             int rowHeight = 0;
             for (int c = 0; c < ChildCount; c++) {
-                View child = GetChildAt(c);
+                var child = GetChildAt(c);
                 child.Measure(cellWidthSpec, cellHeightSpec);
                 //The row height is the height of the tallest cell.
                 if (child.MeasuredHeight > rowHeight) {
@@ -49,20 +48,24 @@ namespace MonoDroid.TimesSquare
             int widthWithPadding = totalWidth + PaddingLeft + PaddingRight;
             int heightWithPadding = rowHeight + PaddingTop + PaddingBottom;
             SetMeasuredDimension(widthWithPadding, heightWithPadding);
-            Logr.D("Row.OnMeasure {0} ms", DateTime.Now.Millisecond - start);
-            _oldHeightMeasureSpec = widthMeasureSpec;
-            _oldWidthMeasureSpec = heightMeasureSpec;
+
+            stopwatch.Stop();
+            Logr.D("Row.OnMeasure {0} ms", stopwatch.ElapsedMilliseconds);
         }
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
-            long start = DateTime.Now.Millisecond;
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+
             int cellHeight = b - t;
             for (int c = 0; c < ChildCount; c++) {
-                View child = GetChildAt(c);
+                var child = GetChildAt(c);
                 child.Layout(c * _cellSize, 0, (c + 1) * _cellSize, cellHeight);
             }
-            Logr.D("Row.OnLayout {0} ms", DateTime.Now.Millisecond - start);
+
+            stopwatch.Stop();
+            Logr.D("Row.OnLayout {0} ms", stopwatch.ElapsedMilliseconds);
         }
 
         public void OnClick(View v)

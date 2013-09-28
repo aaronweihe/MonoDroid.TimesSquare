@@ -26,12 +26,12 @@ namespace MonoDroid.TimesSquare
 
             var originalDay = today;
 
+            var firstDayOfWeek = (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+
             var headerRow = (CalendarRowView)view._grid.GetChildAt(0);
 
-            var firstDayOfWekk = (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
-
             for (int i = 0; i < 7; i++) {
-                var offset = firstDayOfWekk - (int) today.DayOfWeek + i;
+                var offset = firstDayOfWeek - (int)today.DayOfWeek + i;
                 today = today.AddDays(offset);
                 var textView = (TextView) headerRow.GetChildAt(i);
                 textView.Text = today.ToString(weekdayNameFormat);
@@ -48,6 +48,7 @@ namespace MonoDroid.TimesSquare
             _title.Text = month.Label;
 
             int numOfRows = cells.Count;
+            _grid.NumRows = numOfRows;
             for (int i = 0; i < 6; i++) {
                 var weekRow = (CalendarRowView)_grid.GetChildAt(i + 1);
                 weekRow.SetListener(_listener);

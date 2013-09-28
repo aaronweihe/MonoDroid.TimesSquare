@@ -8,13 +8,11 @@ namespace MonoDroid.TimesSquare
     {
         private readonly LayoutInflater _inflater;
         private readonly CalendarPickerView _calendar;
-        private readonly Context _context;
 
         public MonthAdapter(Context context, CalendarPickerView calendar)
         {
-            _context = context;
             _calendar = calendar;
-            _inflater = LayoutInflater.From(_context);
+            _inflater = LayoutInflater.From(context);
         }
 
         public override MonthDescriptor this[int position]
@@ -40,11 +38,10 @@ namespace MonoDroid.TimesSquare
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var monthView = (MonthView) convertView ??
-                                  MonthView.Create(parent, _inflater, _calendar.WeekdayNameFormat, _calendar.Listener, _calendar.Today);
+                            MonthView.Create(parent, _inflater, _calendar.WeekdayNameFormat,
+                                _calendar.Listener, _calendar.Today);
             monthView.Init(_calendar.Months[position], _calendar.Cells[position]);
             return monthView;
         }
-
-
     }
 }
