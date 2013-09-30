@@ -25,14 +25,12 @@ This is a fairly large control so it is wise to give it ample space in your layo
 In the `OnCreate` of your activity/dialog or the `OnCreateView` of your fragment, initialize the view with a range of valid dates as well as the currently selected date.
 
 ```c#
-using Java.Util;
 ...
 
-var nextYear = Calendar.Instance;
-nextYear.Add (CalendarField.Year, 1);
+var nextYear = DateTime.Now.AddYears(1);
 
 var calendar = FindViewById<CalendarPickerView> (Resource.Id.calendar_view);
-calendar.Init (new Date (), new Date (), nextYear.Time);
+calendar.Init (DateTime.Now, DateTime.Now, nextYear);
 
 ```
 
