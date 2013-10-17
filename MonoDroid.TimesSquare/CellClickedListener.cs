@@ -1,7 +1,4 @@
 ﻿using System;
-using Android.Content;
-using Android.Util;
-using Android.Widget;
 
 namespace MonoDroid.TimesSquare
 {

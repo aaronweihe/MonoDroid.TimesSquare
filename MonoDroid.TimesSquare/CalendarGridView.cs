@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Android.Content;
 using Android.Util;
 using Android.Views;

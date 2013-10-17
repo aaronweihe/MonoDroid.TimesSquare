@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 using Android.Content;
 using Android.Runtime;
-using Android.Text;
 using Android.Util;
 using Android.Widget;
-using Java.Awt.Font;
 
 namespace MonoDroid.TimesSquare
 {
