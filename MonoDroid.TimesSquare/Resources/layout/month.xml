@@ -55,5 +55,4 @@
     <include layout="@layout/week" />
     <include layout="@layout/week" />
     </monodroid.timessquare.CalendarGridView>
-
 </monodroid.timessquare.MonthView>

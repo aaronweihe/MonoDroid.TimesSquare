@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using Android.Content;
 using Android.Util;
@@ -43,8 +44,9 @@ namespace MonoDroid.TimesSquare
 
         public void Init(MonthDescriptor month, List<List<MonthCellDescriptor>> cells)
         {
-            Logr.D("Initializing MonthView for {0}", month);
-            long start = DateTime.Now.Millisecond;
+            Logr.D("Initializing MonthView (%d) for %s", GetHashCode(), month);
+            var stopWatch = new Stopwatch();
+            stopWatch.Start();
             _title.Text = month.Label;
 
             int numOfRows = cells.Count;
@@ -57,17 +59,15 @@ namespace MonoDroid.TimesSquare
                     var week = cells[i];
                     for (int c = 0; c < week.Count; c++) {
                         var cell = week[c];
-                        var cellView = (CheckedTextView)weekRow.GetChildAt(c);
+                        var cellView = (CalendarCellView)weekRow.GetChildAt(c);
                         cellView.Text = cell.Value.ToString();
                         cellView.Enabled = cell.IsCurrentMonth;
-                        cellView.Checked = !cell.IsToday;
+
+                        cellView.Selectable = cell.IsSelectable;
                         cellView.Selected = cell.IsSelected;
-                        if (cell.IsSelectable) {
-                            cellView.SetTextColor(Resources.GetColorStateList(Resource.Color.calendar_text_selector));
-                        }
-                        else {
-                            cellView.SetTextColor(Resources.GetColor(Resource.Color.calendar_text_unselectable));
-                        }
+                        cellView.IsCurrentMonth = cell.IsCurrentMonth;
+                        cellView.IsToday = cell.IsToday;
+                        cellView.RangeState = cell.RangeState;
                         cellView.Tag = cell;
                     }
                 }
@@ -75,7 +75,8 @@ namespace MonoDroid.TimesSquare
                     weekRow.Visibility = ViewStates.Gone;
                 }
             }
-            Logr.D("MonthView.Init took {0} ms", DateTime.Now.Millisecond - start);
+            stopWatch.Stop();
+            Logr.D("MonthView.Init took {0} ms", stopWatch.ElapsedMilliseconds);
         }
 
         protected override void OnFinishInflate()

@@ -78,9 +78,6 @@
     <AndroidResource Include="Resources\layout\week.xml" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\color\calendar_bg_selector.xml" />
-  </ItemGroup>
-  <ItemGroup>
     <AndroidResource Include="Resources\color\calendar_text_selector.xml" />
   </ItemGroup>
   <ItemGroup>
@@ -100,6 +97,7 @@
       <SubType>Designer</SubType>
     </Content>
     <AndroidResource Include="Resources\values\attrs.xml" />
+    <AndroidResource Include="Resources\drawable\calendar_bg_selector.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
 </Project>

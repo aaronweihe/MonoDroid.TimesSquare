@@ -45,7 +45,7 @@ namespace MonoDroid.TimesSquare
 
         public IOnDateSelectedListener DateListener;
         private IDateSelectableFilter _dateConfiguredListener;
-        private IOnInvalidDateSelectedListener _invalidDateSelectedListener;
+        public IOnInvalidDateSelectedListener InvalidDateSelectedListener;
 
         public List<DateTime> SelectedDates
         {
@@ -76,8 +76,8 @@ namespace MonoDroid.TimesSquare
             MonthNameFormat = base.Resources.GetString(Resource.String.month_name_format);
             WeekdayNameFormat = base.Resources.GetString(Resource.String.day_name_format);
             FullDateFormat = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
-            Listener = new CellClickedListener(context, this);
-            _invalidDateSelectedListener = new DefaultOnInvalidDateSelectedListener(context, this);
+            Listener = new CellClickedListener(this);
+            InvalidDateSelectedListener = new DefaultOnInvalidDateSelectedListener(context, this);
 
             if (base.IsInEditMode) {
                 Init(DateTime.Now, DateTime.Now.AddYears(1)).WithSelectedDate(DateTime.Now);
@@ -91,7 +91,7 @@ namespace MonoDroid.TimesSquare
                                                    Debug(minDate, maxDate));
             }
             if (minDate.CompareTo(maxDate) > 0) {
-                throw new IllegalArgumentException("minDate must be befoew maxDate. " +
+                throw new IllegalArgumentException("minDate must be before maxDate. " +
                                                    Debug(minDate, maxDate));
             }
             
@@ -153,18 +153,18 @@ namespace MonoDroid.TimesSquare
                     bool isSelectable = isCurrentMonth && IsBetweenDates(cal, MinCal, MaxCal);
                     bool isToday = IsSameDate(cal, Today);
                     int value = cal.Day;
+
                     var rangeState = RangeState.None;
                     if (SelectedCals != null && SelectedCals.Count > 1) {
-                        rangeState = RangeState.First;
-                    }
-                    else if (IsSameDate(minSelectedCal, cal)) {
-                        rangeState = RangeState.Last;
-                    }
-                    else if (IsSameDate(maxSelectedCal, cal)) {
-                        rangeState = RangeState.Last;
-                    }
-                    else if (IsBetweenDates(cal, minSelectedCal, maxSelectedCal)) {
-                        rangeState = RangeState.Middle;
+                        if (IsSameDate(minSelectedCal, cal)) {
+                            rangeState = RangeState.First;
+                        }
+                        else if (IsSameDate(maxSelectedCal, cal)) {
+                            rangeState = RangeState.Last;
+                        }
+                        else if (IsBetweenDates(cal, minSelectedCal, maxSelectedCal)) {
+                            rangeState = RangeState.Middle;
+                        }
                     }
 
                     weekCells.Add(new MonthCellDescriptor(date, isCurrentMonth, isSelectable, isSelected,
@@ -229,7 +229,7 @@ namespace MonoDroid.TimesSquare
             return date.Subtract(date.TimeOfDay);
         }
 
-        private bool IsSelectable(DateTime date)
+        public bool IsSelectable(DateTime date)
         {
             return _dateConfiguredListener == null || _dateConfiguredListener.IsDateSelectable(date);
         }
@@ -265,7 +265,7 @@ namespace MonoDroid.TimesSquare
             SelectedCals.Clear();
         }
 
-        private bool DoSelectDate(DateTime date, MonthCellDescriptor cell)
+        public bool DoSelectDate(DateTime date, MonthCellDescriptor cell)
         {
             var newlySelectedDate = date;
             SetMidnight(newlySelectedDate);

@@ -66,8 +66,7 @@ namespace MonoDroid.TimesSquare
                 return;
             }
 
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            var stopwatch = Stopwatch.StartNew();
 
             _oldWidthMeasureSize = widthMeasureSize;
             int cellSize = widthMeasureSize/7;
@@ -93,8 +92,7 @@ namespace MonoDroid.TimesSquare
 
         protected override void OnLayout(bool changed, int l, int t, int r, int b)
         {
-            var stopwatch = new Stopwatch();
-            stopwatch.Start();
+            var stopwatch = Stopwatch.StartNew();
 
             t = 0;
             for (int c = 0; c < ChildCount; c++) {

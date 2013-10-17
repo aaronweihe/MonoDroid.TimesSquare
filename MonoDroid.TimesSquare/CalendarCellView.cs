@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 
 using Android.Content;
+using Android.Runtime;
 using Android.Text;
 using Android.Util;
 using Android.Widget;
+using Java.Awt.Font;
 
 namespace MonoDroid.TimesSquare
 {
@@ -23,6 +25,10 @@ namespace MonoDroid.TimesSquare
         private bool _isToday;
         private RangeState _rangeState = RangeState.None;
 
+        public CalendarCellView(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
+        {
+        }
+
         public CalendarCellView(Context context) : base(context)
         {
         }
@@ -36,33 +42,45 @@ namespace MonoDroid.TimesSquare
         {
         }
 
-        public void SetSelectable(bool isSelectable)
+        public bool Selectable
         {
-            _isSelectable = isSelectable;
-            RefreshDrawableState();
+            set
+            {
+                _isSelectable = value;
+                RefreshDrawableState();
+            }
         }
 
-        public void SetCurrentMonth(bool isCurrentMonth)
+        public bool IsCurrentMonth
         {
-            _isCurrentMonth = isCurrentMonth;
-            RefreshDrawableState();
+            set
+            {
+                _isCurrentMonth = value;
+                RefreshDrawableState();
+            }
         }
 
-        public void SetToday(bool isToday)
+        public bool IsToday
         {
-            _isToday = isToday;
-            RefreshDrawableState();
+            set
+            {
+                _isToday = value;
+                RefreshDrawableState();
+            }
         }
 
-        public void SetRangeState(RangeState rangeState)
+        public RangeState RangeState
         {
-            _rangeState = rangeState;
-            RefreshDrawableState();
+            set
+            {
+                _rangeState = value;
+                RefreshDrawableState();
+            }
         }
 
         protected override int[] OnCreateDrawableState(int extraSpace)
         {
-            int[] drawableState = base.OnCreateDrawableState(extraSpace);
+            int[] drawableState = base.OnCreateDrawableState(extraSpace + 4);
 
             if (_isSelectable) {
                 MergeDrawableStates(drawableState, StateSelectable);
