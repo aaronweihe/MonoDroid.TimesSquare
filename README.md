@@ -30,8 +30,17 @@ In the `OnCreate` of your activity/dialog or the `OnCreateView` of your fragment
 var nextYear = DateTime.Now.AddYears(1);
 
 var calendar = FindViewById<CalendarPickerView> (Resource.Id.calendar_view);
-calendar.Init (DateTime.Now, DateTime.Now, nextYear);
+calendar.Init (DateTime.Now, nextYear)
+    .WithSelectedDate(DateTime.Now);
+```
 
+The default mode of the view is to have one selectable date.  If you want the user to be able to
+select multiple dates or a date range, use the InMode() method:
+
+```c#
+
+calendar.Init (DateTime.Now, nextYear)
+    .InMode(CalendarPickerView.SelectionMode.Range);
 ```
 
 To retrieve the currently selected date, call `calendar.SelectedDate` on the view.
