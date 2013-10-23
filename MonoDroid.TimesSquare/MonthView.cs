@@ -53,7 +53,7 @@ namespace MonoDroid.TimesSquare
             _grid.NumRows = numOfRows;
             for (int i = 0; i < 6; i++) {
                 var weekRow = (CalendarRowView)_grid.GetChildAt(i + 1);
-                weekRow.SetListener(_listener);
+                weekRow.Listener = _listener;
                 if (i < numOfRows) {
                     weekRow.Visibility = ViewStates.Visible;
                     var week = cells[i];

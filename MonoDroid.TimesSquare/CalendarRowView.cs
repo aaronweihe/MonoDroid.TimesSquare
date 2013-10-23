@@ -9,10 +9,8 @@ namespace MonoDroid.TimesSquare
     public class CalendarRowView : ViewGroup, View.IOnClickListener
     {
         public bool IsHeaderRow { get; set; }
-        private IListener _listener;
+        public IListener Listener { private get; set; }
         private int _cellSize;
-        private int _oldWidthMeasureSpec;
-        private int _oldHeightMeasureSpec;
 
         public CalendarRowView(Context context, IAttributeSet attrs)
             : base(context, attrs)
@@ -70,14 +68,9 @@ namespace MonoDroid.TimesSquare
 
         public void OnClick(View v)
         {
-            if(_listener!=null){
-				_listener.HandleClick((MonthCellDescriptor) v.Tag); 
-			}
-        }
-
-        public void SetListener(IListener listener)
-        {
-			_listener = listener;
+            if (Listener != null) {
+                Listener.HandleClick((MonthCellDescriptor) v.Tag);
+            }
         }
     }
 }

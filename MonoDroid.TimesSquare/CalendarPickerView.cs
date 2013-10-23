@@ -29,7 +29,6 @@ namespace MonoDroid.TimesSquare
         public readonly string MonthNameFormat;
         public readonly string WeekdayNameFormat;
         public readonly string FullDateFormat;
-        private readonly Context _context;
 
         public SelectionMode Mode { get; set; }
 
@@ -42,9 +41,8 @@ namespace MonoDroid.TimesSquare
         private DateTime _monthCounter;
 
         public readonly IListener Listener;
-
         public IOnDateSelectedListener DateListener;
-        private IDateSelectableFilter _dateConfiguredListener;
+        public IDateSelectableFilter DateConfiguredListener;
         public IOnInvalidDateSelectedListener InvalidDateSelectedListener;
 
         public List<DateTime> SelectedDates
@@ -231,7 +229,7 @@ namespace MonoDroid.TimesSquare
 
         public bool IsSelectable(DateTime date)
         {
-            return _dateConfiguredListener == null || _dateConfiguredListener.IsDateSelectable(date);
+            return DateConfiguredListener == null || DateConfiguredListener.IsDateSelectable(date);
         }
 
         private DateTime ApplyMultiSelect(DateTime date, DateTime selectedCal)
@@ -496,8 +494,7 @@ namespace MonoDroid.TimesSquare
             for (int i = 0; i < _calendar.Months.Count; i++) {
                 var month = _calendar.Months[i];
                 if (selectedIndex == -1) {
-                    if (
-                        _calendar.SelectedCals.Any(
+                    if (_calendar.SelectedCals.Any(
                             selectedCal => CalendarPickerView.IsSameMonth(selectedCal, month))) {
                         selectedIndex = i;
                     }
