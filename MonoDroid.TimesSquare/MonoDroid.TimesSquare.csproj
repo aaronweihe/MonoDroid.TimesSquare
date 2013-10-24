@@ -51,8 +51,6 @@
     <Compile Include="CalendarGridView.cs" />
     <Compile Include="CalendarPickerView.cs" />
     <Compile Include="CalendarRowView.cs" />
-    <Compile Include="CellClickedListener.cs" />
-    <Compile Include="IListener.cs" />
     <Compile Include="MonthAdapter.cs" />
     <Compile Include="MonthCellDescriptor.cs" />
     <Compile Include="MonthDescriptor.cs" />

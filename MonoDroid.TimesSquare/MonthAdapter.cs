@@ -38,8 +38,8 @@ namespace MonoDroid.TimesSquare
         public override View GetView(int position, View convertView, ViewGroup parent)
         {
             var monthView = (MonthView) convertView ??
-                            MonthView.Create(parent, _inflater, _calendar.WeekdayNameFormat,
-                                _calendar.Listener, _calendar.Today);
+                            MonthView.Create(parent, _inflater, _calendar.WeekdayNameFormat, _calendar.Today,
+                                _calendar.ClickHandler);
             monthView.Init(_calendar.Months[position], _calendar.Cells[position]);
             return monthView;
         }

@@ -20,6 +20,7 @@ namespace MonoDroid.TimesSquare
             Range
         };
 
+        private readonly Context _context;
         public readonly MonthAdapter MyAdapter;
         public readonly List<MonthDescriptor> Months = new List<MonthDescriptor>();
 
@@ -40,10 +41,10 @@ namespace MonoDroid.TimesSquare
         public DateTime MaxCal;
         private DateTime _monthCounter;
 
-        public readonly IListener Listener;
-        public IOnDateSelectedListener DateListener;
-        public IDateSelectableFilter DateConfiguredListener;
-        public IOnInvalidDateSelectedListener InvalidDateSelectedListener;
+        public ClickHandler ClickHandler;
+        public  InvalidDateSelectedHandler InvalidDateSelectedHandler;
+        public DateSelectedHandler DateSelectedHandler;
+        public DateSelectableHandler DateSelectableHandler;
 
         public List<DateTime> SelectedDates
         {
@@ -64,22 +65,51 @@ namespace MonoDroid.TimesSquare
             : base(context, attrs)
         {
             ResourceIdManager.UpdateIdValues();
+            _context = context;
             MyAdapter = new MonthAdapter(context, this);
             base.Adapter = MyAdapter;
             base.Divider = null;
             base.DividerHeight = 0;
+
             var bgColor = base.Resources.GetColor(Resource.Color.calendar_bg);
             base.SetBackgroundColor(bgColor);
             base.CacheColorHint = bgColor;
+
             MonthNameFormat = base.Resources.GetString(Resource.String.month_name_format);
             WeekdayNameFormat = base.Resources.GetString(Resource.String.day_name_format);
             FullDateFormat = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
-            Listener = new CellClickedListener(this);
-            InvalidDateSelectedListener = new DefaultOnInvalidDateSelectedListener(context, this);
+            ClickHandler += OnCellClicked;
+            InvalidDateSelectedHandler += OnInvalidateDateClicked;
 
             if (base.IsInEditMode) {
                 Init(DateTime.Now, DateTime.Now.AddYears(1)).WithSelectedDate(DateTime.Now);
             }
+        }
+
+        private void OnCellClicked(MonthCellDescriptor cell)
+        {
+            var clickedDate = cell.DateTime;
+
+            if (!IsBetweenDates(clickedDate, MinCal, MaxCal) || !IsSelectable(clickedDate)) {
+                if (InvalidDateSelectedHandler != null) {
+                    InvalidDateSelectedHandler(clickedDate);
+                }
+            }
+            else {
+                bool wasSelected = DoSelectDate(clickedDate, cell);
+                if (wasSelected && DateSelectedHandler != null) {
+                    DateSelectedHandler(clickedDate);
+                }
+            }
+        }
+
+        private void OnInvalidateDateClicked(DateTime date)
+        {
+            string fullDateFormat = _context.Resources.GetString(Resource.String.full_date_format);
+            string errorMsg = _context.Resources.GetString(Resource.String.invalid_date,
+                MinCal.ToString(fullDateFormat), MaxCal.ToString(fullDateFormat));
+            Toast.MakeText(_context, errorMsg, ToastLength.Short).Show();
+
         }
 
         public FluentInitializer Init(DateTime minDate, DateTime maxDate)
@@ -229,7 +259,7 @@ namespace MonoDroid.TimesSquare
 
         public bool IsSelectable(DateTime date)
         {
-            return DateConfiguredListener == null || DateConfiguredListener.IsDateSelectable(date);
+            return DateSelectableHandler == null || DateSelectableHandler(date);
         }
 
         private DateTime ApplyMultiSelect(DateTime date, DateTime selectedCal)
@@ -405,56 +435,16 @@ namespace MonoDroid.TimesSquare
             return "minDate: " + minDate + "\nmaxDate: " + maxDate;
         }
 
-        public void SetOnDateSelectedListener(IOnDateSelectedListener listener)
+        private class MonthCellWithMonthIndex
         {
-            DateListener = listener;
-        }
+            public readonly MonthCellDescriptor Cell;
+            public readonly int MonthIndex;
 
-        private class DefaultOnInvalidDateSelectedListener : IOnInvalidDateSelectedListener
-        {
-            private readonly Context _context;
-            private readonly CalendarPickerView _calendar;
-
-            public DefaultOnInvalidDateSelectedListener(Context context, CalendarPickerView calendar)
+            public MonthCellWithMonthIndex(MonthCellDescriptor cell, int monthIndex)
             {
-                _context = context;
-                _calendar = calendar;
+                Cell = cell;
+                MonthIndex = monthIndex;
             }
-
-            public void OnInvalidDateSelected(DateTime date)
-            {
-                string fullDateFormat = _context.Resources.GetString(Resource.String.full_date_format);
-                string errorMsg = _context.Resources.GetString(Resource.String.invalid_date,
-                    _calendar.MinCal.ToString(fullDateFormat), _calendar.MaxCal.ToString(fullDateFormat));
-                Toast.MakeText(_context, errorMsg, ToastLength.Short).Show();
-            }
-        }
-    }
-
-    public interface IOnDateSelectedListener
-    {
-        void OnDateSelected(DateTime date);
-    }
-
-    public interface IOnInvalidDateSelectedListener
-    {
-        void OnInvalidDateSelected(DateTime date);
-    }
-
-    public interface IDateSelectableFilter
-    {
-        bool IsDateSelectable(DateTime date);
-    }
-
-    public class MonthCellWithMonthIndex
-    {
-        public MonthCellDescriptor Cell;
-        public int MonthIndex;
-
-        public MonthCellWithMonthIndex(MonthCellDescriptor cell, int monthIndex)
-        {
-            Cell = cell;
-            MonthIndex = monthIndex;
         }
     }
 
@@ -522,4 +512,12 @@ namespace MonoDroid.TimesSquare
             throw new NotImplementedException();
         }
     }
+
+    public delegate void ClickHandler(MonthCellDescriptor cell);
+
+    public delegate void DateSelectedHandler(DateTime date);
+
+    public delegate void InvalidDateSelectedHandler(DateTime date);
+
+    public delegate bool DateSelectableHandler(DateTime date);
 }

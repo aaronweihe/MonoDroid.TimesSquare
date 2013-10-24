@@ -13,7 +13,7 @@ namespace MonoDroid.TimesSquare
     {
         private TextView _title;
         private CalendarGridView _grid;
-        private IListener _listener;
+        private ClickHandler _clickHandler;
 
         public MonthView(Context context, IAttributeSet attrs)
             : base(context, attrs)
@@ -21,24 +21,24 @@ namespace MonoDroid.TimesSquare
         }
 
         public static MonthView Create(ViewGroup parent, LayoutInflater inflater, string weekdayNameFormat,
-                                       IListener listener, DateTime today)
+            DateTime today, ClickHandler handler)
         {
-            var view = (MonthView)inflater.Inflate(Resource.Layout.month, parent, false);
+            var view = (MonthView) inflater.Inflate(Resource.Layout.month, parent, false);
 
             var originalDay = today;
 
-            var firstDayOfWeek = (int)CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
+            var firstDayOfWeek = (int) CultureInfo.CurrentCulture.DateTimeFormat.FirstDayOfWeek;
 
-            var headerRow = (CalendarRowView)view._grid.GetChildAt(0);
+            var headerRow = (CalendarRowView) view._grid.GetChildAt(0);
 
             for (int i = 0; i < 7; i++) {
-                var offset = firstDayOfWeek - (int)today.DayOfWeek + i;
+                var offset = firstDayOfWeek - (int) today.DayOfWeek + i;
                 today = today.AddDays(offset);
                 var textView = (TextView) headerRow.GetChildAt(i);
                 textView.Text = today.ToString(weekdayNameFormat);
                 today = originalDay;
             }
-            view._listener = listener;
+            view._clickHandler = handler;
             return view;
         }
 
@@ -53,7 +53,7 @@ namespace MonoDroid.TimesSquare
             _grid.NumRows = numOfRows;
             for (int i = 0; i < 6; i++) {
                 var weekRow = (CalendarRowView)_grid.GetChildAt(i + 1);
-                weekRow.Listener = _listener;
+                weekRow.ClickHandler = _clickHandler;
                 if (i < numOfRows) {
                     weekRow.Visibility = ViewStates.Visible;
                     var week = cells[i];
