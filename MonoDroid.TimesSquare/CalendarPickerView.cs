@@ -21,28 +21,28 @@ namespace MonoDroid.TimesSquare
         };
 
         private readonly Context _context;
-        public readonly MonthAdapter MyAdapter;
-        public readonly List<MonthDescriptor> Months = new List<MonthDescriptor>();
+        internal readonly MonthAdapter MyAdapter;
+        internal readonly List<MonthDescriptor> Months = new List<MonthDescriptor>();
 
-        public readonly List<List<List<MonthCellDescriptor>>> Cells =
+        internal readonly List<List<List<MonthCellDescriptor>>> Cells =
             new List<List<List<MonthCellDescriptor>>>();
 
-        public readonly string MonthNameFormat;
-        public readonly string WeekdayNameFormat;
-        public readonly string FullDateFormat;
+        internal readonly string MonthNameFormat;
+        internal readonly string WeekdayNameFormat;
+        internal readonly string FullDateFormat;
 
         public SelectionMode Mode { get; set; }
 
-        public List<MonthCellDescriptor> SelectedCells = new List<MonthCellDescriptor>();
+        internal List<MonthCellDescriptor> SelectedCells = new List<MonthCellDescriptor>();
 
-        public readonly DateTime Today = DateTime.Now;
-        public List<DateTime> SelectedCals = new List<DateTime>();
-        public DateTime MinCal;
-        public DateTime MaxCal;
+        internal readonly DateTime Today = DateTime.Now;
+        internal List<DateTime> SelectedCals = new List<DateTime>();
+        internal DateTime MinCal;
+        internal DateTime MaxCal;
         private DateTime _monthCounter;
 
-        public ClickHandler ClickHandler;
-        public InvalidDateSelectedHandler InvalidDateSelectedHandler;
+        internal ClickHandler ClickHandler;
+        public event InvalidDateSelectedHandler OnInvalidDateSelected;
         public event DateSelectedHandler OnDateSelected;
         public event DateSelectableHandler OnDateSelectable;
 
@@ -79,7 +79,7 @@ namespace MonoDroid.TimesSquare
             WeekdayNameFormat = base.Resources.GetString(Resource.String.day_name_format);
             FullDateFormat = CultureInfo.CurrentCulture.DateTimeFormat.LongDatePattern;
             ClickHandler += OnCellClicked;
-            InvalidDateSelectedHandler += OnInvalidateDateClicked;
+            OnInvalidDateSelected += OnInvalidateDateClicked;
 
             if (base.IsInEditMode) {
                 Init(DateTime.Now, DateTime.Now.AddYears(1)).WithSelectedDate(DateTime.Now);
@@ -91,8 +91,8 @@ namespace MonoDroid.TimesSquare
             var clickedDate = cell.DateTime;
 
             if (!IsBetweenDates(clickedDate, MinCal, MaxCal) || !IsSelectable(clickedDate)) {
-                if (InvalidDateSelectedHandler != null) {
-                    InvalidDateSelectedHandler(clickedDate);
+                if (OnInvalidDateSelected != null) {
+                    OnInvalidDateSelected(clickedDate);
                 }
             }
             else {
@@ -159,7 +159,7 @@ namespace MonoDroid.TimesSquare
             return new FluentInitializer(this);
         }
 
-        public List<List<MonthCellDescriptor>> GetMonthCells(MonthDescriptor month, DateTime startCal)
+        internal List<List<MonthCellDescriptor>> GetMonthCells(MonthDescriptor month, DateTime startCal)
         {
             var cells = new List<List<MonthCellDescriptor>>();
             var cal = new DateTime(startCal.Year, startCal.Month, 1);
@@ -203,27 +203,7 @@ namespace MonoDroid.TimesSquare
             return cells;
         }
 
-        public bool SetSelectedDate(DateTime date)
-        {
-            var monthCellWithMonthIndex = GetMonthCellWithIndexByDate(date);
-            if (monthCellWithMonthIndex == null) {
-                return false;
-            }
-
-            SelectedCells.Clear();
-            monthCellWithMonthIndex.Cell.IsSelected = true;
-            SelectedCells.Add(monthCellWithMonthIndex.Cell);
-            SelectedCals.Clear();
-            SelectedCals.Add(monthCellWithMonthIndex.Cell.DateTime);
-            if (monthCellWithMonthIndex.MonthIndex != 0) {
-                ScrolltoSelectedMonth(monthCellWithMonthIndex.MonthIndex);
-            }
-
-            MyAdapter.NotifyDataSetChanged();
-            return true;
-        }
-
-        public void ScrolltoSelectedMonth(int selectedIndex)
+        internal void ScrolltoSelectedMonth(int selectedIndex)
         {
             Task.Factory.StartNew(() => SmoothScrollToPosition(selectedIndex));
         }
@@ -257,7 +237,7 @@ namespace MonoDroid.TimesSquare
             return date.Subtract(date.TimeOfDay);
         }
 
-        public bool IsSelectable(DateTime date)
+        private bool IsSelectable(DateTime date)
         {
             return OnDateSelectable == null || OnDateSelectable(date);
         }
@@ -293,7 +273,7 @@ namespace MonoDroid.TimesSquare
             SelectedCals.Clear();
         }
 
-        public bool DoSelectDate(DateTime date, MonthCellDescriptor cell)
+        internal bool DoSelectDate(DateTime date, MonthCellDescriptor cell)
         {
             var newlySelectedDate = date;
             SetMidnight(newlySelectedDate);
@@ -358,7 +338,7 @@ namespace MonoDroid.TimesSquare
             return date > DateTime.MinValue;
         }
 
-        public void ValidateAndUpdate()
+        internal void ValidateAndUpdate()
         {
             if (Adapter == null) {
                 Adapter = MyAdapter;
@@ -366,7 +346,7 @@ namespace MonoDroid.TimesSquare
             MyAdapter.NotifyDataSetChanged();
         }
 
-        public bool SelectDate(DateTime date)
+        internal bool SelectDate(DateTime date)
         {
             if (date == DateTime.MinValue) {
                 throw new IllegalArgumentException("Selected date must be non-zero. " + date);
@@ -407,25 +387,25 @@ namespace MonoDroid.TimesSquare
             return selectedCals[selectedCals.Count - 1];
         }
 
-        public static bool IsBetweenDates(DateTime date, DateTime minCal, DateTime maxCal)
+        private static bool IsBetweenDates(DateTime date, DateTime minCal, DateTime maxCal)
         {
             return (date.Equals(minCal) || date.CompareTo(minCal) > 0) // >= minCal
                    && date.CompareTo(maxCal) < 0; // && < maxCal
         }
 
-        public static bool IsSameDate(DateTime cal, DateTime selectedDate)
+        private static bool IsSameDate(DateTime cal, DateTime selectedDate)
         {
             return cal.Month == selectedDate.Month
                    && cal.Year == selectedDate.Year
                    && cal.Day == selectedDate.Day;
         }
 
-        public static bool IsSameMonth(DateTime cal, MonthDescriptor month)
+        internal static bool IsSameMonth(DateTime cal, MonthDescriptor month)
         {
             return (cal.Month == month.Month && cal.Year == month.Year);
         }
 
-        public static bool ContatinsDate(IEnumerable<DateTime> selectedCals, DateTime cal)
+        private static bool ContatinsDate(IEnumerable<DateTime> selectedCals, DateTime cal)
         {
             return selectedCals.Any(selectedCal => IsSameDate(cal, selectedCal));
         }
