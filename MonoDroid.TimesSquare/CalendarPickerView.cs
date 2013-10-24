@@ -42,9 +42,9 @@ namespace MonoDroid.TimesSquare
         private DateTime _monthCounter;
 
         public ClickHandler ClickHandler;
-        public  InvalidDateSelectedHandler InvalidDateSelectedHandler;
-        public DateSelectedHandler DateSelectedHandler;
-        public DateSelectableHandler DateSelectableHandler;
+        public InvalidDateSelectedHandler InvalidDateSelectedHandler;
+        public event DateSelectedHandler OnDateSelected;
+        public event DateSelectableHandler OnDateSelectable;
 
         public List<DateTime> SelectedDates
         {
@@ -97,8 +97,8 @@ namespace MonoDroid.TimesSquare
             }
             else {
                 bool wasSelected = DoSelectDate(clickedDate, cell);
-                if (wasSelected && DateSelectedHandler != null) {
-                    DateSelectedHandler(clickedDate);
+                if (wasSelected && OnDateSelected != null) {
+                    OnDateSelected(clickedDate);
                 }
             }
         }
@@ -259,7 +259,7 @@ namespace MonoDroid.TimesSquare
 
         public bool IsSelectable(DateTime date)
         {
-            return DateSelectableHandler == null || DateSelectableHandler(date);
+            return OnDateSelectable == null || OnDateSelectable(date);
         }
 
         private DateTime ApplyMultiSelect(DateTime date, DateTime selectedCal)
