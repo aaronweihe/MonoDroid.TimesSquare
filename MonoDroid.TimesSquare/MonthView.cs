@@ -44,7 +44,7 @@ namespace MonoDroid.TimesSquare
 
         public void Init(MonthDescriptor month, List<List<MonthCellDescriptor>> cells)
         {
-            Logr.D("Initializing MonthView (%d) for %s", GetHashCode(), month);
+            Logr.D("Initializing MonthView ({0:d}) for {1}", GetHashCode(), month);
             var stopWatch = new Stopwatch();
             stopWatch.Start();
             _title.Text = month.Label;

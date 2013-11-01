@@ -106,8 +106,9 @@ namespace MonoDroid.TimesSquare
         private void OnInvalidateDateClicked(DateTime date)
         {
             string fullDateFormat = _context.Resources.GetString(Resource.String.full_date_format);
-            string errorMsg = _context.Resources.GetString(Resource.String.invalid_date,
-                MinCal.ToString(fullDateFormat), MaxCal.ToString(fullDateFormat));
+            string errorMsg = _context.Resources.GetString(Resource.String.invalid_date);
+            errorMsg = string.Format(errorMsg, MinCal.ToString(fullDateFormat),
+                MaxCal.ToString(fullDateFormat));
             Toast.MakeText(_context, errorMsg, ToastLength.Short).Show();
 
         }
@@ -150,7 +151,7 @@ namespace MonoDroid.TimesSquare
                 var month = new MonthDescriptor(_monthCounter.Month, _monthCounter.Year, _monthCounter,
                     _monthCounter.ToString(MonthNameFormat));
                 Cells.Add(GetMonthCells(month, _monthCounter));
-                Logr.D("Adding month %s", month);
+                Logr.D("Adding month {0}", month);
                 Months.Add(month);
                 _monthCounter = _monthCounter.AddMonths(1);
             }
