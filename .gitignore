@@ -18,6 +18,7 @@ TestResults
 *.Designer.cs
 *.designer.cs
 *.DS_Store
+*.DotSettings
 
 # Build results
 [Dd]ebug/

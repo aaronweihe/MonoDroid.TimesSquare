@@ -42,8 +42,8 @@ namespace MonoDroid.TimesSquare
         private DateTime _monthCounter;
 
         internal ClickHandler ClickHandler;
-        public event InvalidDateSelectedHandler OnInvalidDateSelected;
-        public event DateSelectedHandler OnDateSelected;
+        public event EventHandler<DateSelectedEventArgs> OnInvalidDateSelected;
+        public event EventHandler<DateSelectedEventArgs> OnDateSelectedAdvanced; 
         public event DateSelectableHandler OnDateSelectable;
 
         public List<DateTime> SelectedDates
@@ -92,25 +92,24 @@ namespace MonoDroid.TimesSquare
 
             if (!IsBetweenDates(clickedDate, MinCal, MaxCal) || !IsSelectable(clickedDate)) {
                 if (OnInvalidDateSelected != null) {
-                    OnInvalidDateSelected(clickedDate);
+                    OnInvalidDateSelected(this, new DateSelectedEventArgs(clickedDate));
                 }
             }
             else {
                 bool wasSelected = DoSelectDate(clickedDate, cell);
-                if (wasSelected && OnDateSelected != null) {
-                    OnDateSelected(clickedDate);
+                if (wasSelected && OnDateSelectedAdvanced != null) {
+                    OnDateSelectedAdvanced(this, new DateSelectedEventArgs(clickedDate));
                 }
             }
         }
 
-        private void OnInvalidateDateClicked(DateTime date)
+        private void OnInvalidateDateClicked(object sender, DateSelectedEventArgs e)
         {
             string fullDateFormat = _context.Resources.GetString(Resource.String.full_date_format);
             string errorMsg = _context.Resources.GetString(Resource.String.invalid_date);
             errorMsg = string.Format(errorMsg, MinCal.ToString(fullDateFormat),
                 MaxCal.ToString(fullDateFormat));
             Toast.MakeText(_context, errorMsg, ToastLength.Short).Show();
-
         }
 
         public FluentInitializer Init(DateTime minDate, DateTime maxDate)
@@ -496,9 +495,19 @@ namespace MonoDroid.TimesSquare
 
     public delegate void ClickHandler(MonthCellDescriptor cell);
 
-    public delegate void DateSelectedHandler(DateTime date);
-
-    public delegate void InvalidDateSelectedHandler(DateTime date);
-
     public delegate bool DateSelectableHandler(DateTime date);
+
+    public class DateSelectedEventArgs : EventArgs
+    {
+        public DateSelectedEventArgs(DateTime date)
+        {
+            SelectedDate = date;
+        }
+
+        public DateTime SelectedDate
+        {
+            get;
+            private set;
+        }
+    }
 }

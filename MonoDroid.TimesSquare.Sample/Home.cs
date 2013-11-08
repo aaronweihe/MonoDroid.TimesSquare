@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using Android.Content;
 using Android.Content.PM;
+using Android.Views;
 using Android.Widget;
 using Android.App;
 using Android.OS;
-using Java.Sql;
 
 namespace MonoDroid.TimesSquare.Sample
 {
@@ -28,15 +28,15 @@ namespace MonoDroid.TimesSquare.Sample
                 .InMode(CalendarPickerView.SelectionMode.Single)
                 .WithSelectedDate(DateTime.Now);
 
-            calendar.OnDateSelected +=
-                date => Toast.MakeText(this, date.ToShortDateString(), ToastLength.Short).Show();
+            calendar.OnDateSelectedAdvanced +=
+                (s, e) => Toast.MakeText(this, e.SelectedDate.ToShortDateString(), ToastLength.Short).Show();
 
             var btnSingle = FindViewById<Button>(Resource.Id.button_single);
             var btnMulti = FindViewById<Button>(Resource.Id.button_multi);
             var btnRange = FindViewById<Button>(Resource.Id.button_range);
             var btnDialog = FindViewById<Button>(Resource.Id.button_dialog);
 
-            btnSingle.Click += (s, o) =>
+            btnSingle.Click += (s, e) =>
             {
                 btnSingle.Enabled = false;
                 btnMulti.Enabled = true;
@@ -47,7 +47,7 @@ namespace MonoDroid.TimesSquare.Sample
                     .WithSelectedDate(DateTime.Now);
             };
 
-            btnMulti.Click += (s, o) =>
+            btnMulti.Click += (s, e) =>
             {
                 btnSingle.Enabled = true;
                 btnMulti.Enabled = false;
@@ -62,7 +62,7 @@ namespace MonoDroid.TimesSquare.Sample
                     .WithSelectedDates(dates);
             };
 
-            btnRange.Click += (s, o) =>
+            btnRange.Click += (s, e) =>
             {
                 btnSingle.Enabled = true;
                 btnMulti.Enabled = true;
@@ -74,7 +74,7 @@ namespace MonoDroid.TimesSquare.Sample
                     .WithSelectedDates(dates);
             };
 
-            btnDialog.Click += (s, o) =>
+            btnDialog.Click += (s, e) =>
             {
                 var dialogView =
                     (CalendarPickerView) LayoutInflater.Inflate(Resource.Layout.dialog, null, false);
