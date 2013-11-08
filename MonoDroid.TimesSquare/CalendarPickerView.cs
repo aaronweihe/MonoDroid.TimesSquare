@@ -43,7 +43,7 @@ namespace MonoDroid.TimesSquare
 
         internal ClickHandler ClickHandler;
         public event EventHandler<DateSelectedEventArgs> OnInvalidDateSelected;
-        public event EventHandler<DateSelectedEventArgs> OnDateSelectedAdvanced; 
+        public event EventHandler<DateSelectedEventArgs> OnDateSelected; 
         public event DateSelectableHandler OnDateSelectable;
 
         public List<DateTime> SelectedDates
@@ -97,8 +97,8 @@ namespace MonoDroid.TimesSquare
             }
             else {
                 bool wasSelected = DoSelectDate(clickedDate, cell);
-                if (wasSelected && OnDateSelectedAdvanced != null) {
-                    OnDateSelectedAdvanced(this, new DateSelectedEventArgs(clickedDate));
+                if (wasSelected && OnDateSelected != null) {
+                    OnDateSelected(this, new DateSelectedEventArgs(clickedDate));
                 }
             }
         }

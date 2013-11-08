@@ -28,7 +28,7 @@ namespace MonoDroid.TimesSquare.Sample
                 .InMode(CalendarPickerView.SelectionMode.Single)
                 .WithSelectedDate(DateTime.Now);
 
-            calendar.OnDateSelectedAdvanced +=
+            calendar.OnDateSelected +=
                 (s, e) => Toast.MakeText(this, e.SelectedDate.ToShortDateString(), ToastLength.Short).Show();
 
             var btnSingle = FindViewById<Button>(Resource.Id.button_single);
