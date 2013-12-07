@@ -43,7 +43,8 @@ namespace MonoDroid.TimesSquare
 
         internal ClickHandler ClickHandler;
         public event EventHandler<DateSelectedEventArgs> OnInvalidDateSelected;
-        public event EventHandler<DateSelectedEventArgs> OnDateSelected; 
+        public event EventHandler<DateSelectedEventArgs> OnDateSelected;
+        public event EventHandler<DateSelectedEventArgs> OnDateUnselected; 
         public event DateSelectableHandler OnDateSelectable;
 
         public List<DateTime> SelectedDates
@@ -95,10 +96,12 @@ namespace MonoDroid.TimesSquare
                     OnInvalidDateSelected(this, new DateSelectedEventArgs(clickedDate));
                 }
             }
-            else {
-                bool wasSelected = DoSelectDate(clickedDate, cell);
-                if (wasSelected && OnDateSelected != null) {
+            else if (OnDateSelected != null) {
+                if (DoSelectDate(clickedDate, cell)) {
                     OnDateSelected(this, new DateSelectedEventArgs(clickedDate));
+                }
+                else {
+                    OnDateUnselected(this, new DateSelectedEventArgs(clickedDate));
                 }
             }
         }
@@ -144,8 +147,8 @@ namespace MonoDroid.TimesSquare
             _monthCounter = MinCal;
             int maxMonth = MaxCal.Month;
             int maxYear = MaxCal.Year;
-            while (_monthCounter.Month <= maxMonth
-                   || _monthCounter.Year < maxYear
+            while ((_monthCounter.Month <= maxMonth
+                    || _monthCounter.Year < maxYear)
                    && _monthCounter.Year < maxYear + 1) {
                 var month = new MonthDescriptor(_monthCounter.Month, _monthCounter.Year, _monthCounter,
                     _monthCounter.ToString(MonthNameFormat));
