@@ -96,12 +96,15 @@ namespace MonoDroid.TimesSquare
                     OnInvalidDateSelected(this, new DateSelectedEventArgs(clickedDate));
                 }
             }
-            else if (OnDateSelected != null) {
-                if (DoSelectDate(clickedDate, cell)) {
-                    OnDateSelected(this, new DateSelectedEventArgs(clickedDate));
-                }
-                else {
-                    OnDateUnselected(this, new DateSelectedEventArgs(clickedDate));
+            else {
+                bool wasSelected = DoSelectDate(clickedDate, cell);
+                if (OnDateSelected != null) {
+                    if (wasSelected) {
+                        OnDateSelected(this, new DateSelectedEventArgs(clickedDate));
+                    }
+                    else if(OnDateUnselected != null) {
+                        OnDateUnselected(this, new DateSelectedEventArgs(clickedDate));
+                    }
                 }
             }
         }
