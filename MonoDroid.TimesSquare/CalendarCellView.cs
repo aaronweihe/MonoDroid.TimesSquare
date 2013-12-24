@@ -66,7 +66,7 @@ namespace MonoDroid.TimesSquare
             }
         }
 
-        public bool IsHighlighted { private get; set; }
+        public bool IsHighlighted { get; set; }
 
         public RangeState RangeState
         {
