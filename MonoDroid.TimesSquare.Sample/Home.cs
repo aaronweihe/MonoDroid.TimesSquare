@@ -26,7 +26,8 @@ namespace MonoDroid.TimesSquare.Sample
             var calendar = FindViewById<CalendarPickerView>(Resource.Id.calendar_view);
             calendar.Init(DateTime.Now, nextYear)
                 .InMode(CalendarPickerView.SelectionMode.Single)
-                .WithSelectedDate(DateTime.Now);
+                .WithSelectedDate(DateTime.Now)
+                .WithHighlightedDate(DateTime.Now.AddDays(2));
 
             calendar.OnDateSelected +=
                 (s, e) => Toast.MakeText(this, e.SelectedDate.ToShortDateString(), ToastLength.Short).Show();

@@ -27,6 +27,9 @@ namespace MonoDroid.TimesSquare
         internal readonly List<List<List<MonthCellDescriptor>>> Cells =
             new List<List<List<MonthCellDescriptor>>>();
 
+        private readonly List<MonthCellDescriptor> _highlightedCells = new List<MonthCellDescriptor>();
+        private readonly List<DateTime> _highlightedCals= new List<DateTime>(); 
+
         internal readonly string MonthNameFormat;
         internal readonly string WeekdayNameFormat;
         internal readonly string FullDateFormat;
@@ -133,6 +136,7 @@ namespace MonoDroid.TimesSquare
             //Clear out any previously selected dates/cells.
             SelectedCals.Clear();
             SelectedCells.Clear();
+            _highlightedCells.Clear();
 
             //Clear previous state.
             Cells.Clear();
@@ -186,6 +190,7 @@ namespace MonoDroid.TimesSquare
                     bool isSelected = isCurrentMonth && ContatinsDate(SelectedCals, cal);
                     bool isSelectable = isCurrentMonth && IsBetweenDates(cal, MinCal, MaxCal);
                     bool isToday = IsSameDate(cal, Today);
+                    bool isHighlighted = ContatinsDate(_highlightedCals, cal);
                     int value = cal.Day;
 
                     var rangeState = RangeState.None;
@@ -202,7 +207,7 @@ namespace MonoDroid.TimesSquare
                     }
 
                     weekCells.Add(new MonthCellDescriptor(date, isCurrentMonth, isSelectable, isSelected,
-                        isToday, value, rangeState));
+                        isToday, isHighlighted, value, rangeState));
                     cal = cal.AddDays(1);
                 }
             }
@@ -354,13 +359,7 @@ namespace MonoDroid.TimesSquare
 
         internal bool SelectDate(DateTime date)
         {
-            if (date == DateTime.MinValue) {
-                throw new IllegalArgumentException("Selected date must be non-zero. " + date);
-            }
-            if (date.CompareTo(MinCal) < 0 || date.CompareTo(MaxCal) > 0) {
-                throw new IllegalArgumentException(
-                    "Selected date must be between minDate and maxDate. " + date);
-            }
+            ValidateDate(date);
 
             var cell = GetMonthCellWithIndexByDate(date);
             if (cell == null || !IsSelectable(date)) {
@@ -372,6 +371,19 @@ namespace MonoDroid.TimesSquare
                 ScrolltoSelectedMonth(cell.MonthIndex);
             }
             return wasSelected;
+        }
+
+        private void ValidateDate(DateTime date)
+        {
+            if (date == DateTime.MinValue)
+            {
+                throw new IllegalArgumentException("Selected date must be non-zero. " + date);
+            }
+            if (date.CompareTo(MinCal) < 0 || date.CompareTo(MaxCal) > 0)
+            {
+                throw new IllegalArgumentException(
+                    "Selected date must be between minDate and maxDate. " + date);
+            }
         }
 
         private static DateTime GetMinDate(List<DateTime> selectedCals)
@@ -414,6 +426,24 @@ namespace MonoDroid.TimesSquare
         private static bool ContatinsDate(IEnumerable<DateTime> selectedCals, DateTime cal)
         {
             return selectedCals.Any(selectedCal => IsSameDate(cal, selectedCal));
+        }
+
+        public void HighlightDates(ICollection<DateTime> dates)
+        {
+            foreach (var date in dates) {
+                ValidateDate(date);
+
+                var monthCellWithMonthIndex = GetMonthCellWithIndexByDate(date);
+                if (monthCellWithMonthIndex != null) {
+                    var cell = monthCellWithMonthIndex.Cell;
+                    _highlightedCells.Add(cell);
+                    _highlightedCals.Add(date);
+                    cell.IsHighlighted = true;
+                }
+            }
+
+            MyAdapter.NotifyDataSetChanged();
+            Adapter = MyAdapter;
         }
 
         private static string Debug(DateTime minDate, DateTime maxDate)
@@ -496,6 +526,17 @@ namespace MonoDroid.TimesSquare
             //Not sure how to translate this to C# flavor.
             //Leave it later.
             throw new NotImplementedException();
+        }
+
+        public FluentInitializer WithHighlightedDates(ICollection<DateTime> dates)
+        {
+            _calendar.HighlightDates(dates);
+            return this;
+        }
+
+        public FluentInitializer WithHighlightedDate(DateTime date)
+        {
+            return WithHighlightedDates(new List<DateTime> {date});
         }
     }
 
