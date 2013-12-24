@@ -26,29 +26,32 @@ namespace MonoDroid.TimesSquare
 
         internal readonly List<List<List<MonthCellDescriptor>>> Cells =
             new List<List<List<MonthCellDescriptor>>>();
-
+        internal List<MonthCellDescriptor> SelectedCells = new List<MonthCellDescriptor>();
         private readonly List<MonthCellDescriptor> _highlightedCells = new List<MonthCellDescriptor>();
-        private readonly List<DateTime> _highlightedCals= new List<DateTime>(); 
+        internal List<DateTime> SelectedCals = new List<DateTime>();
+        private readonly List<DateTime> _highlightedCals= new List<DateTime>();
+        internal readonly DateTime Today = DateTime.Now;
+        internal DateTime MinCal;
+        internal DateTime MaxCal;
+        private DateTime _monthCounter;
 
         internal readonly string MonthNameFormat;
         internal readonly string WeekdayNameFormat;
         internal readonly string FullDateFormat;
 
-        public SelectionMode Mode { get; set; }
-
-        internal List<MonthCellDescriptor> SelectedCells = new List<MonthCellDescriptor>();
-
-        internal readonly DateTime Today = DateTime.Now;
-        internal List<DateTime> SelectedCals = new List<DateTime>();
-        internal DateTime MinCal;
-        internal DateTime MaxCal;
-        private DateTime _monthCounter;
-
         internal ClickHandler ClickHandler;
+
         public event EventHandler<DateSelectedEventArgs> OnInvalidDateSelected;
         public event EventHandler<DateSelectedEventArgs> OnDateSelected;
         public event EventHandler<DateSelectedEventArgs> OnDateUnselected; 
         public event DateSelectableHandler OnDateSelectable;
+
+        public SelectionMode Mode { get; set; }
+
+        public DateTime SelectedDate
+        {
+            get { return SelectedCals.Count > 0 ? SelectedCals[0] : DateTime.MinValue; }
+        }
 
         public List<DateTime> SelectedDates
         {
@@ -58,11 +61,6 @@ namespace MonoDroid.TimesSquare
                 selectedDates.Sort();
                 return selectedDates;
             }
-        }
-
-        public DateTime SelectedDate
-        {
-            get { return SelectedCals.Count > 0 ? SelectedCals[0] : DateTime.MinValue; }
         }
 
         public CalendarPickerView(Context context, IAttributeSet attrs)
