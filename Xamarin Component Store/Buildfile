@@ -1,0 +1,12 @@
+mono xamarin-component.exe create-manually monodroid-timessquare-1.0.6.xam \
+    --name="MonoDroid TimesSquare" \
+    --summary="Standalone Android widget for picking a single date from a calendar view." \
+    --publisher="MonoDroid.TimesSquare" \
+    --website="https://github.com/aaronmix/MonoDroid.TimesSquare" \
+    --details="Details.md" \
+    --license="License.md" \
+    --getting-started="GettingStarted.md" \
+    --icon="icons/timessquare_128x128.png" \
+    --icon="icons/timessquare_512x512.png" \
+    --library="android":"../MonoDroid.TimesSquare/bin/Release/MonoDroid.TimesSquare.dll" \
+    --sample="Android Sample. Demonstrates MonoDroid.TimesSquare":"../MonoDroid.TimesSquare.sln"
