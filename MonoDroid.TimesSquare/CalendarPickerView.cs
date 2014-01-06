@@ -103,7 +103,7 @@ namespace MonoDroid.TimesSquare
                     if (wasSelected) {
                         OnDateSelected(this, new DateSelectedEventArgs(clickedDate));
                     }
-                    else if(OnDateUnselected != null) {
+                    else if (OnDateUnselected != null) {
                         OnDateUnselected(this, new DateSelectedEventArgs(clickedDate));
                     }
                 }
@@ -192,7 +192,7 @@ namespace MonoDroid.TimesSquare
                     int value = cal.Day;
 
                     var rangeState = RangeState.None;
-                    if (SelectedCals != null && SelectedCals.Count > 1) {
+                    if (SelectedCals.Count > 1) {
                         if (IsSameDate(minSelectedCal, cal)) {
                             rangeState = RangeState.First;
                         }
@@ -375,7 +375,7 @@ namespace MonoDroid.TimesSquare
         {
             if (date == DateTime.MinValue)
             {
-                throw new IllegalArgumentException("Selected date must be non-zero. " + date);
+                throw new IllegalArgumentException("Selected date must be non-zero. ");
             }
             if (date.CompareTo(MinCal) < 0 || date.CompareTo(MaxCal) > 0)
             {
