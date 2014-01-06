@@ -26,10 +26,11 @@ namespace MonoDroid.TimesSquare
 
         internal readonly List<List<List<MonthCellDescriptor>>> Cells =
             new List<List<List<MonthCellDescriptor>>>();
+
         internal List<MonthCellDescriptor> SelectedCells = new List<MonthCellDescriptor>();
         private readonly List<MonthCellDescriptor> _highlightedCells = new List<MonthCellDescriptor>();
         internal List<DateTime> SelectedCals = new List<DateTime>();
-        private readonly List<DateTime> _highlightedCals= new List<DateTime>();
+        private readonly List<DateTime> _highlightedCals = new List<DateTime>();
         internal readonly DateTime Today = DateTime.Now;
         internal DateTime MinCal;
         internal DateTime MaxCal;
@@ -43,7 +44,7 @@ namespace MonoDroid.TimesSquare
 
         public event EventHandler<DateSelectedEventArgs> OnInvalidDateSelected;
         public event EventHandler<DateSelectedEventArgs> OnDateSelected;
-        public event EventHandler<DateSelectedEventArgs> OnDateUnselected; 
+        public event EventHandler<DateSelectedEventArgs> OnDateUnselected;
         public event DateSelectableHandler OnDateSelectable;
 
         public SelectionMode Mode { get; set; }
@@ -129,7 +130,7 @@ namespace MonoDroid.TimesSquare
                 throw new IllegalArgumentException("minDate must be before maxDate. " +
                                                    Debug(minDate, maxDate));
             }
-            
+
             Mode = SelectionMode.Single;
             //Clear out any previously selected dates/cells.
             SelectedCals.Clear();
@@ -373,12 +374,10 @@ namespace MonoDroid.TimesSquare
 
         private void ValidateDate(DateTime date)
         {
-            if (date == DateTime.MinValue)
-            {
+            if (date == DateTime.MinValue) {
                 throw new IllegalArgumentException("Selected date must be non-zero. ");
             }
-            if (date.CompareTo(MinCal) < 0 || date.CompareTo(MaxCal) > 0)
-            {
+            if (date.CompareTo(MinCal) < 0 || date.CompareTo(MaxCal) > 0) {
                 throw new IllegalArgumentException(
                     "Selected date must be between minDate and maxDate. " + date);
             }
@@ -395,8 +394,7 @@ namespace MonoDroid.TimesSquare
 
         private static DateTime GetMaxDate(List<DateTime> selectedCals)
         {
-            if (selectedCals == null || selectedCals.Count == 0)
-            {
+            if (selectedCals == null || selectedCals.Count == 0) {
                 return DateTime.MinValue;
             }
             selectedCals.Sort();
@@ -499,7 +497,7 @@ namespace MonoDroid.TimesSquare
                 var month = _calendar.Months[i];
                 if (selectedIndex == -1) {
                     if (_calendar.SelectedCals.Any(
-                            selectedCal => CalendarPickerView.IsSameMonth(selectedCal, month))) {
+                        selectedCal => CalendarPickerView.IsSameMonth(selectedCal, month))) {
                         selectedIndex = i;
                     }
                     if (selectedIndex == -1 && todayIndex == -1 &&
@@ -514,7 +512,7 @@ namespace MonoDroid.TimesSquare
             else if (todayIndex != -1) {
                 _calendar.ScrolltoSelectedMonth(todayIndex);
             }
-            
+
             _calendar.ValidateAndUpdate();
             return this;
         }
@@ -549,10 +547,6 @@ namespace MonoDroid.TimesSquare
             SelectedDate = date;
         }
 
-        public DateTime SelectedDate
-        {
-            get;
-            private set;
-        }
+        public DateTime SelectedDate { get; private set; }
     }
 }
