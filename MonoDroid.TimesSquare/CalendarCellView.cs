@@ -20,6 +20,7 @@ namespace MonoDroid.TimesSquare
         private bool _isSelectable;
         private bool _isCurrentMonth;
         private bool _isToday;
+        private bool _isHighlighted;
         private RangeState _rangeState = RangeState.None;
 
         public CalendarCellView(IntPtr handle, JniHandleOwnership transfer) : base(handle, transfer)
@@ -66,7 +67,14 @@ namespace MonoDroid.TimesSquare
             }
         }
 
-        public bool IsHighlighted { get; set; }
+        public bool IsHighlighted
+        {
+            set
+            {
+                _isHighlighted = value;
+                RefreshDrawableState();
+            }
+        }
 
         public RangeState RangeState
         {
@@ -93,7 +101,8 @@ namespace MonoDroid.TimesSquare
                 MergeDrawableStates(drawableState, StateToday);
             }
 
-            if (IsHighlighted) {
+            if (_isHighlighted)
+            {
                 MergeDrawableStates(drawableState, StateHighlighted);
             }
 
