@@ -32,8 +32,8 @@ namespace MonoDroid.TimesSquare
         internal List<DateTime> SelectedCals = new List<DateTime>();
         private readonly List<DateTime> _highlightedCals = new List<DateTime>();
         internal readonly DateTime Today = DateTime.Now;
-        internal DateTime MinCal;
-        internal DateTime MaxCal;
+        internal DateTime MinDate;
+        internal DateTime MaxDate;
         private DateTime _monthCounter;
 
         internal readonly string MonthNameFormat;
@@ -93,7 +93,7 @@ namespace MonoDroid.TimesSquare
         {
             var clickedDate = cell.DateTime;
 
-            if (!IsBetweenDates(clickedDate, MinCal, MaxCal) || !IsSelectable(clickedDate)) {
+            if (!IsBetweenDates(clickedDate, MinDate, MaxDate) || !IsSelectable(clickedDate)) {
                 if (OnInvalidDateSelected != null) {
                     OnInvalidDateSelected(this, new DateSelectedEventArgs(clickedDate));
                 }
@@ -115,8 +115,8 @@ namespace MonoDroid.TimesSquare
         {
             string fullDateFormat = _context.Resources.GetString(Resource.String.full_date_format);
             string errorMsg = _context.Resources.GetString(Resource.String.invalid_date);
-            errorMsg = string.Format(errorMsg, MinCal.ToString(fullDateFormat),
-                MaxCal.ToString(fullDateFormat));
+            errorMsg = string.Format(errorMsg, MinDate.ToString(fullDateFormat),
+                MaxDate.ToString(fullDateFormat));
             Toast.MakeText(_context, errorMsg, ToastLength.Short).Show();
         }
 
@@ -140,19 +140,19 @@ namespace MonoDroid.TimesSquare
             //Clear previous state.
             Cells.Clear();
             Months.Clear();
-            MinCal = minDate;
-            MaxCal = maxDate;
-            MinCal = SetMidnight(MinCal);
-            MaxCal = SetMidnight(MaxCal);
+            MinDate = minDate;
+            MaxDate = maxDate;
+            MinDate = SetMidnight(MinDate);
+            MaxDate = SetMidnight(MaxDate);
 
             // maxDate is exclusive: bump back to the previous day so if maxDate is the first of a month,
             // We don't accidentally include that month in the view.
-            MaxCal = MaxCal.AddMinutes(-1);
+            MaxDate = MaxDate.AddMinutes(-1);
 
             //Now iterate between minCal and maxCal and build up our list of months to show.
-            _monthCounter = MinCal;
-            int maxMonth = MaxCal.Month;
-            int maxYear = MaxCal.Year;
+            _monthCounter = MinDate;
+            int maxMonth = MaxDate.Month;
+            int maxYear = MaxDate.Year;
             while ((_monthCounter.Month <= maxMonth
                     || _monthCounter.Year < maxYear)
                    && _monthCounter.Year < maxYear + 1) {
@@ -187,7 +187,7 @@ namespace MonoDroid.TimesSquare
                     var date = cal;
                     bool isCurrentMonth = cal.Month == month.Month;
                     bool isSelected = isCurrentMonth && ContatinsDate(SelectedCals, cal);
-                    bool isSelectable = isCurrentMonth && IsBetweenDates(cal, MinCal, MaxCal);
+                    bool isSelectable = isCurrentMonth && IsBetweenDates(cal, MinDate, MaxDate);
                     bool isToday = IsSameDate(cal, Today);
                     bool isHighlighted = ContatinsDate(_highlightedCals, cal);
                     int value = cal.Day;
@@ -375,11 +375,13 @@ namespace MonoDroid.TimesSquare
         private void ValidateDate(DateTime date)
         {
             if (date == DateTime.MinValue) {
-                throw new IllegalArgumentException("Selected date must be non-zero. ");
+                throw new IllegalArgumentException("Selected date must be non-zero.");
             }
-            if (date.CompareTo(MinCal) < 0 || date.CompareTo(MaxCal) > 0) {
+            if (date.CompareTo(MinDate) < 0 || date.CompareTo(MaxDate) > 0) {
                 throw new IllegalArgumentException(
-                    "Selected date must be between minDate and maxDate. " + date);
+                    string.Format("Selected date must be between minDate and maxDate. "
+                                  + "minDate: {0}, maxDate: {1}, selectedDate: {2}.",
+                        MinDate.ToShortDateString(), MaxDate.ToShortDateString(), date.ToShortDateString()));
             }
         }
 
