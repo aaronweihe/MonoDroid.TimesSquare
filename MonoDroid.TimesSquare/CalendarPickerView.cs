@@ -213,9 +213,22 @@ namespace MonoDroid.TimesSquare
             return cells;
         }
 
-        internal void ScrolltoSelectedMonth(int selectedIndex)
+        internal void ScrollToSelectedMonth(int selectedIndex)
         {
-            Task.Factory.StartNew(() => SmoothScrollToPosition(selectedIndex));
+            ScrollToSelectedMonth(selectedIndex, false);
+        }
+
+        internal void ScrollToSelectedMonth(int selectedIndex, bool smoothScroll)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                if (smoothScroll) {
+                    SmoothScrollToPosition(selectedIndex);
+                }
+                else {
+                    SetSelection(selectedIndex);
+                }
+            });
         }
 
         private MonthCellWithMonthIndex GetMonthCellWithIndexByDate(DateTime date)
@@ -358,6 +371,11 @@ namespace MonoDroid.TimesSquare
 
         internal bool SelectDate(DateTime date)
         {
+            return SelectDate(date, false);
+        }
+
+        private bool SelectDate(DateTime date, bool smoothScroll)
+        {
             ValidateDate(date);
 
             var cell = GetMonthCellWithIndexByDate(date);
@@ -367,7 +385,7 @@ namespace MonoDroid.TimesSquare
 
             bool wasSelected = DoSelectDate(date, cell.Cell);
             if (wasSelected) {
-                ScrolltoSelectedMonth(cell.MonthIndex);
+                ScrollToSelectedMonth(cell.MonthIndex, smoothScroll);
             }
             return wasSelected;
         }
@@ -509,10 +527,10 @@ namespace MonoDroid.TimesSquare
                 }
             }
             if (selectedIndex != -1) {
-                _calendar.ScrolltoSelectedMonth(selectedIndex);
+                _calendar.ScrollToSelectedMonth(selectedIndex);
             }
             else if (todayIndex != -1) {
-                _calendar.ScrolltoSelectedMonth(todayIndex);
+                _calendar.ScrollToSelectedMonth(todayIndex);
             }
 
             _calendar.ValidateAndUpdate();
