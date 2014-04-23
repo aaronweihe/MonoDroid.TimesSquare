@@ -11,6 +11,7 @@ namespace MonoDroid.TimesSquare
         private readonly Paint _dividerPaint = new Paint();
         private int _oldWidthMeasureSize;
         private int _oldNumRows;
+        private static readonly float _floatFudge = 0.5f;
 
         public CalendarGridView(Context context, IAttributeSet attrs)
             : base(context, attrs)
@@ -35,11 +36,11 @@ namespace MonoDroid.TimesSquare
 
             //Left side border.
             int left = row.GetChildAt(0).Left + Left;
-            canvas.DrawLine(left, top, left, bottom, _dividerPaint);
+            canvas.DrawLine(left + _floatFudge, top, left + _floatFudge, bottom, _dividerPaint);
 
             //Each cell's right-side border.
             for (int c = 0; c < 7; c++) {
-                int x = left + row.GetChildAt(c).Right - 1;
+                float x = left + row.GetChildAt(c).Right - _floatFudge;
                 canvas.DrawLine(x, top, x, bottom, _dividerPaint);
             }
         }
@@ -49,7 +50,7 @@ namespace MonoDroid.TimesSquare
             bool isInvalidated = base.DrawChild(canvas, child, drawingTime);
             //Draw a bottom border
             int bottom = child.Bottom - 1;
-            canvas.DrawLine(child.Left, bottom, child.Right, bottom, _dividerPaint);
+            canvas.DrawLine(child.Left, bottom, child.Right - 2, bottom, _dividerPaint);
             return isInvalidated;
         }
 
