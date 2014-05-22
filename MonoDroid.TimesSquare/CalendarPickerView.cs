@@ -135,6 +135,7 @@ namespace MonoDroid.TimesSquare
             //Clear out any previously selected dates/cells.
             SelectedCals.Clear();
             SelectedCells.Clear();
+            _highlightedCals.Clear();
             _highlightedCells.Clear();
 
             //Clear previous state.
