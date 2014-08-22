@@ -1,8 +1,10 @@
 using System;
 using System.Diagnostics;
 using Android.Content;
+using Android.Content.Res;
 using Android.Util;
 using Android.Views;
+using Android.Widget;
 
 namespace MonoDroid.TimesSquare
 {
@@ -70,6 +72,27 @@ namespace MonoDroid.TimesSquare
         {
             if (ClickHandler != null) {
                 ClickHandler((MonthCellDescriptor) v.Tag);
+            }
+        }
+
+        public void SetCellBackground(int resID)
+        {
+            for (int i = 0; i < ChildCount; i++) {
+                GetChildAt(i).SetBackgroundResource(resID);
+            }
+        }
+
+        public void SetCellTextColor(ColorStateList colors)
+        {
+            for (int i = 0; i < ChildCount; i++) {
+                ((TextView)GetChildAt(i)).SetTextColor(colors);
+            }
+        }
+
+        public void SetCellTextColor(int resID)
+        {
+            for (int i = 0; i < ChildCount; i++) {
+                ((TextView) GetChildAt(i)).SetTextColor(base.Resources.GetColor(resID));
             }
         }
     }
