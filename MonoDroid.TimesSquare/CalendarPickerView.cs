@@ -89,7 +89,6 @@ namespace MonoDroid.TimesSquare
                 Resource.Color.calendar_text_active);
             a.Recycle();
 
-
             _context = context;
             MyAdapter = new MonthAdapter(context, this);
             base.Adapter = MyAdapter;
