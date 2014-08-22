@@ -1,5 +1,6 @@
 ﻿using System.Diagnostics;
 using Android.Content;
+using Android.Content.Res;
 using Android.Util;
 using Android.Views;
 using Android.Graphics;
@@ -19,11 +20,34 @@ namespace MonoDroid.TimesSquare
             _dividerPaint.Color = base.Resources.GetColor(Resource.Color.calendar_divider);
         }
 
+        public void SetDividerColor(int color)
+        {
+            _dividerPaint.Color = base.Resources.GetColor(color);
+        }
+
+        public void SetDayBackground(int resID)
+        {
+            for (int i = 1; i < ChildCount; i++) {
+                ((CalendarRowView) GetChildAt(i)).SetCellBackground(resID);
+            }
+        }
+
+        public void SetDayTextColor(int resID)
+        {
+            for (int i = 0; i < ChildCount; i++) {
+                var colors = base.Resources.GetColorStateList(resID);
+                ((CalendarRowView)GetChildAt(i)).SetCellTextColor(colors);
+            }
+        }
+
+        public void SetHeaderTextColor(int color)
+        {
+            ((CalendarRowView)GetChildAt(0)).SetCellTextColor(color);
+        }
+
         public override void AddView(View child, int index, LayoutParams @params)
         {
-            if (ChildCount == 0) {
-                ((CalendarRowView) child).IsHeaderRow = true;
-            }
+            if (ChildCount == 0) { ((CalendarRowView) child).IsHeaderRow = true; }
             base.AddView(child, index, @params);
         }
 

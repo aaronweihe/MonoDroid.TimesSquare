@@ -35,6 +35,11 @@ namespace MonoDroid.TimesSquare
         internal DateTime MinDate;
         internal DateTime MaxDate;
         private DateTime _monthCounter;
+        internal int DividerColor;
+        internal int DayBackgroundResID;
+        internal int DayTextColorResID;
+        internal int TitleTextColor;
+        internal int HeaderTextColor;
 
         internal readonly string MonthNameFormat;
         internal readonly string WeekdayNameFormat;
@@ -68,15 +73,31 @@ namespace MonoDroid.TimesSquare
             : base(context, attrs)
         {
             ResourceIdManager.UpdateIdValues();
+
+            var a = context.ObtainStyledAttributes(attrs, Resource.Styleable.CalendarPickerView);
+            var bg = a.GetColor(Resource.Styleable.CalendarPickerView_android_background,
+                Resource.Color.calendar_bg);
+            DividerColor = a.GetColor(Resource.Styleable.CalendarPickerView_dividerColor,
+                Resource.Color.calendar_divider);
+            DayBackgroundResID = a.GetResourceId(Resource.Styleable.CalendarPickerView_dayBackground,
+                Resource.Drawable.calendar_bg_selector);
+            DayTextColorResID = a.GetResourceId(Resource.Styleable.CalendarPickerView_dayTextColor,
+                Resource.Color.calendar_text_selector);
+            TitleTextColor = a.GetColor(Resource.Styleable.CalendarPickerView_titleTextColor,
+                Resource.Color.calendar_text_active);
+            HeaderTextColor = a.GetColor(Resource.Styleable.CalendarPickerView_headerTextColor,
+                Resource.Color.calendar_text_active);
+            a.Recycle();
+
+
             _context = context;
             MyAdapter = new MonthAdapter(context, this);
             base.Adapter = MyAdapter;
             base.Divider = null;
             base.DividerHeight = 0;
 
-            var bgColor = base.Resources.GetColor(Resource.Color.calendar_bg);
-            base.SetBackgroundColor(bgColor);
-            base.CacheColorHint = bgColor;
+            base.SetBackgroundColor(bg);
+            base.CacheColorHint = bg;
 
             MonthNameFormat = base.Resources.GetString(Resource.String.month_name_format);
             WeekdayNameFormat = base.Resources.GetString(Resource.String.day_name_format);

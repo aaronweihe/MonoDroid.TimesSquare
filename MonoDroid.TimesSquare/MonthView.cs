@@ -21,9 +21,18 @@ namespace MonoDroid.TimesSquare
         }
 
         public static MonthView Create(ViewGroup parent, LayoutInflater inflater, string weekdayNameFormat,
-            DateTime today, ClickHandler handler)
+            DateTime today, ClickHandler handler, int dividerColor, int dayBackgroundResId,
+            int dayTextColorResId, int titleTextColor, int headerTextColor)
         {
             var view = (MonthView) inflater.Inflate(Resource.Layout.month, parent, false);
+            view.setDividerColor(dividerColor);
+            view.setDayTextColor(dayTextColorResId);
+            view.setTitleTextColor(titleTextColor);
+            view.setHeaderTextColor(headerTextColor);
+
+            if (dayBackgroundResId != 0) {
+                view.setDayBackground(dayBackgroundResId);
+            }
 
             var originalDay = today;
 
@@ -78,6 +87,31 @@ namespace MonoDroid.TimesSquare
             }
             stopWatch.Stop();
             Logr.D("MonthView.Init took {0} ms", stopWatch.ElapsedMilliseconds);
+        }
+
+        public void setDividerColor(int color)
+        {
+            _grid.SetDividerColor(color);
+        }
+
+        public void setDayBackground(int resId)
+        {
+            _grid.SetDayBackground(resId);
+        }
+
+        public void setDayTextColor(int resId)
+        {
+            _grid.SetDayTextColor(resId);
+        }
+
+        public void setTitleTextColor(int color)
+        {
+            _title.SetTextColor(base.Resources.GetColor(color));
+        }
+
+        public void setHeaderTextColor(int color)
+        {
+            _grid.SetHeaderTextColor(color);
         }
 
         protected override void OnFinishInflate()
