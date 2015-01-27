@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
+using Android.App;
 using Android.Content;
 using Android.Content.PM;
+using Android.OS;
 using Android.Views;
 using Android.Widget;
-using Android.App;
-using Android.OS;
 
 namespace MonoDroid.TimesSquare.Sample
 {
@@ -55,8 +55,9 @@ namespace MonoDroid.TimesSquare.Sample
                 btnRange.Enabled = true;
 
                 var dates = new List<DateTime>();
-                for (int i = 0; i < 5; i++) {
-                    dates.Add(DateTime.Now.AddDays(3*i));
+                for (int i = 0; i < 5; i++)
+                {
+                    dates.Add(DateTime.Now.AddDays(3 * i));
                 }
                 calendar.Init(DateTime.Now, nextYear)
                     .InMode(CalendarPickerView.SelectionMode.Multi)
@@ -69,7 +70,7 @@ namespace MonoDroid.TimesSquare.Sample
                 btnMulti.Enabled = true;
                 btnRange.Enabled = false;
 
-                var dates = new List<DateTime>() {DateTime.Now.AddDays(3), DateTime.Now.AddDays(5)};
+                var dates = new List<DateTime>() { DateTime.Now.AddDays(3), DateTime.Now.AddDays(5) };
                 calendar.Init(DateTime.Now, nextYear)
                     .InMode(CalendarPickerView.SelectionMode.Range)
                     .WithSelectedDates(dates);
@@ -78,12 +79,14 @@ namespace MonoDroid.TimesSquare.Sample
             btnDialog.Click += (s, e) =>
             {
                 var dialogView =
-                    (CalendarPickerView) LayoutInflater.Inflate(Resource.Layout.dialog, null, false);
+                    (CalendarPickerView)LayoutInflater.Inflate(Resource.Layout.dialog, null, false);
                 dialogView.Init(DateTime.Now, nextYear);
                 new AlertDialog.Builder(this).SetTitle("I'm a dialog!")
                     .SetView(dialogView)
                     .SetNeutralButton("Dismiss",
-                        (sender, args) => { }).Create().Show();
+                    (sender, args) =>
+                    {
+                    }).Create().Show();
             };
 
             FindViewById<Button>(Resource.Id.done_button).Click += (s, o) =>
